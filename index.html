@@ -64,7 +64,7 @@
       }
     </style>
   </head>
-  <body>
+  <body onload="get_local_storage()">
     <div class="container">
       <div class="form">
         <h1>Registeration</h1>
@@ -101,8 +101,6 @@
             placeholder="Enter Your Date of Birth"
             name="dob"
             id="dob"
-            min="1970-03-16"
-            max="2007-03-16"
             required
           />
           <label for="terms"> Do you agree to the terms and conditions?</label>
@@ -110,16 +108,7 @@
           <br />
         </form>
         <button type="submit" onclick="get_data()">Submit</button>
-        <table>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Password</th>
-            <th>Dob</th>
-            <th>Accepted terms?</th>
-          </tr>
-          <tr id="output"></tr>
-        </table>
+        <table id="output"></table>
       </div>
     </div>
     <script src="index.js"></script>
