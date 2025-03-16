@@ -79,7 +79,9 @@ function get_data() {
     valid_input = false;
   }
 
-  if (valid_input && terms && valid_age) {
+
+
+  if (valid_input && terms && valid_age && valid_email) {
     let table = JSON.parse(localStorage.getItem("table_array"));
 
     table.push(
