@@ -51,7 +51,7 @@ function get_data() {
   }
 
   let valid_email = check_email(email);
-  let valid_age = age >= 18 && age <= 55;
+  let valid_age = age > 18 && age < 55;
   let valid_input = true;
 
   let class_add = "border_red";
@@ -90,6 +90,3 @@ function get_data() {
     output.innerHTML = table.join("");
   }
 }
-
-
-console.log("started");
