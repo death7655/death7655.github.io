@@ -13,7 +13,9 @@ function check_email(email) {
   let email_regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!email_regex.test(email)) {
     invalid_email.innerText = "Please enter a valid email";
-    setTimeout(() => { invalid_email.innerText = ""; }, 2000);
+    setTimeout(() => {
+      invalid_email.innerText = "";
+    }, 2000);
     return false;
   }
   return true;
@@ -88,3 +90,6 @@ function get_data() {
     output.innerHTML = table.join("");
   }
 }
+
+
+console.log("started");
