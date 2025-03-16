@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>HTML 5 Boilerplate</title>
+    <style>
+      .container {
+        width: 99vw;
+        height: 90vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .form {
+        position: absolute;
+        width: 30%;
+        margin: auto;
+      }
+      h1 {
+        text-align: center;
+      }
+      form {
+        direction: rtl;
+      }
+      input {
+        display: block;
+        direction: ltr;
+        transform: translateY(-30px);
+        width: 40%;
+        max-width: 300px;
+        padding: 10px 15px;
+        font-size: 16px;
+        border: 2px solid #ccc;
+        border-radius: 8px;
+        outline: none;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+      }
+
+      input:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+      }
+
+      label {
+        display: block;
+        direction: ltr;
+      }
+      .terms {
+        transform: translateY(-17px);
+      }
+      .border_red {
+        border-color: #ff0000 !important;
+      }
+      .error {
+        color: #ff0000;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="form">
+        <h1>Registeration</h1>
+        <form>
+          <label for="name">Name</label>
+          <input
+            type="text"
+            placeholder="Enter Your Name"
+            name="name"
+            id="name"
+            required
+          />
+          <label for="email"
+            >Email <span id="invalid_email" class="error"></span
+          ></label>
+          <input
+            type="text"
+            placeholder="Enter Your email"
+            name="email"
+            id="email"
+            required
+          />
+          <label for="password">Password</label>
+          <input
+            type="text"
+            placeholder="Enter Your Password"
+            name="password"
+            id="password"
+            required
+          />
+          <label for="dob">Date Of Birth</label>
+          <input
+            type="date"
+            placeholder="Enter Your Date of Birth"
+            name="dob"
+            id="dob"
+            min="1970-03-16"
+            max="2007-03-16"
+            required
+          />
+          <label for="terms"> Do you agree to the terms and conditions?</label>
+          <input type="checkbox" id="terms" name="terms" class="terms" />
+          <br />
+        </form>
+        <button type="submit" onclick="get_data()">Submit</button>
+        <table>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Password</th>
+            <th>Dob</th>
+            <th>Accepted terms?</th>
+          </tr>
+          <tr id="output"></tr>
+        </table>
+      </div>
+    </div>
+    <script src="index.js"></script>
+  </body>
+</html>
