@@ -9,20 +9,14 @@ const invalid_email = document.getElementById("invalid_email");
 
 const today = new Date();
 
-function check_email(string) {
-  let at = string.includes("@");
-  let com = string.includes(".com");
-  if (at && com) {
-    return true;
-  } else if (at) {
-    invalid_email.innerText = "Please include a valid build";
-  } else {
-    invalid_email.innerText = "Please include an @";
+function check_email(email) {
+  let email_regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email_regex.test(email)) {
+    invalid_email.innerText = "Please enter a valid email";
+    setTimeout(() => { invalid_email.innerText = ""; }, 2000);
+    return false;
   }
-  setTimeout(() => {
-    invalid_email.innerText = "";
-  }, 2000);
-  return false;
+  return true;
 }
 
 function onload() {
@@ -32,96 +26,65 @@ function onload() {
   ];
   if (table == null) {
     localStorage.setItem("table_array", JSON.stringify(array));
-    output.innerHTML = array;
+    output.innerHTML = array.join("");
   } else {
-    output.innerHTML = table;
+    output.innerHTML = table.join("");
   }
 }
 
 function get_data() {
-  let name = name_element.value;
-  let email = email_element.value;
-  let password = password_element.value;
-  let dob =  dob_element.value;
+  let name = name_element.value.trim();
+  let email = email_element.value.trim();
+  let password = password_element.value.trim();
+  let dob = dob_element.value;
   let terms = terms_element.checked;
 
-  let dob_date = new Date(dob)
-
-  let class_add = "border_red";
-
-  let valid_email = check_email(email);
-  let valid_input = false;
-  let valid_age = false;
-
-  let table = JSON.parse(localStorage.getItem("table_array"));
-
-
+  let dob_date = new Date(dob);
   let age = today.getFullYear() - dob_date.getFullYear();
   let monthDiff = today.getMonth() - dob_date.getMonth();
   let dayDiff = today.getDate() - dob_date.getDate();
 
-
   if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
     age--;
   }
-  if (age > 18 && age < 55) {
-    valid_age = true;
-  }
 
-  console.log(valid_age)
+  let valid_email = check_email(email);
+  let valid_age = age >= 18 && age <= 55;
+  let valid_input = true;
 
-  if (name != "") {
-    name_element.classList.remove(class_add);
-    valid_input = true;
-  }
-  if (email != "" && valid_email) {
-    email_element.classList.remove(class_add);
-    valid_input = true;
-  }
-  if (dob != "" && valid_age) {
-    dob_element.classList.remove(class_add);
-    valid_input = true;
-  }
-  if (password != "") {
-    password_element.classList.remove(class_add);
-    valid_input = true;
-  }
+  let class_add = "border_red";
 
-  if (name == "") {
+  // Reset validation
+  name_element.classList.remove(class_add);
+  email_element.classList.remove(class_add);
+  password_element.classList.remove(class_add);
+  dob_element.classList.remove(class_add);
+
+  if (name === "") {
     name_element.classList.add(class_add);
     valid_input = false;
   }
-  if (email == "" || !valid_email) {
+  if (!valid_email) {
     email_element.classList.add(class_add);
     valid_input = false;
   }
-  if (password == "") {
+  if (password === "") {
     password_element.classList.add(class_add);
     valid_input = false;
   }
-  if (dob == "" || !valid_age) {
+  if (!valid_age) {
     dob_element.classList.add(class_add);
     valid_input = false;
   }
 
   if (valid_input && terms && valid_age) {
-    table[0] +=
-      "<tr><td>" +
-      name +
-      "</td>" +
-      "<td>" +
-      email +
-      "</td>" +
-      "<td>" +
-      password +
-      "</td>" +
-      "<td>" +
-      dob +
-      "</td>" +
-      "<td>" +
-      terms +
-      "</td></tr>";
+    let table = JSON.parse(localStorage.getItem("table_array"));
+
+    table.push(
+      `<tr><td>${name}</td><td>${email}</td><td>******</td><td>${dob}</td><td>${terms}</td></tr>`
+    );
+
     localStorage.setItem("table_array", JSON.stringify(table));
-    output.innerHTML = table;
+    output.innerHTML = table.join("");
   }
 }
