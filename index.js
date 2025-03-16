@@ -81,7 +81,7 @@ function get_data() {
     let table = JSON.parse(localStorage.getItem("table_array"));
 
     table.push(
-      `<tr><td>${name}</td><td>${email}</td><td>******</td><td>${dob}</td><td>${terms}</td></tr>`
+      `<tr><td>${name}</td><td>${email}</td><td${password}td><td>${dob}</td><td>${terms}</td></tr>`
     );
 
     localStorage.setItem("table_array", JSON.stringify(table));
