@@ -51,7 +51,7 @@
       .terms {
         transform: translateY(-17px);
       }
-      .border_red {
+      input:invalid {
         border-color: #ff0000 !important;
       }
       .error {
@@ -68,7 +68,7 @@
     <div class="container">
       <div class="form">
         <h1>Registeration</h1>
-        <form>
+        <form onsubmit="get_data()">
           <label for="name">Name</label>
           <input
             type="text"
@@ -106,8 +106,8 @@
           <label for="terms"> Do you agree to the terms and conditions?</label>
           <input type="checkbox" id="terms" name="terms" class="terms" />
           <br />
+          <input type="submit" />
         </form>
-        <button type="submit" onclick="get_data()">Submit</button>
         <table id="output"></table>
       </div>
     </div>
