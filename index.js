@@ -10,19 +10,15 @@ const invalid_email = document.getElementById("invalid_email");
 const today = new Date();
 
 function check_email(email) {
-  let email_regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!email_regex.test(email)) {
-    invalid_email.innerText = "Please enter a valid email";
-    setTimeout(() => {
-      invalid_email.innerText = "";
-    }, 2000);
-    return false;
+  var reg = /^([A-Za-z0-9_\-\.]){1,}\@([A-Za-z0-9_\-\.]){1,}\.([A-Za-z]{2,4})$/;
+  if (reg.test(email) == false) {
+    alert("Email not valid");
+    return false
   }
-  return true;
+  return true
 }
 
 function onload() {
-  localStorage.clear();
   let table = JSON.parse(localStorage.getItem("table_array"));
   let array = [
     "<tr><th>Name</th><th>Email</th><th>Password</th><th>Dob</th><th>Accepted terms?</th></tr>",
