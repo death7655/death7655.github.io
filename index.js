@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function() {
       
       let age = calculateAge(dob);
       if (age < 18 || age > 55) {
-          alert("Age must be between 18 and 55 years.");
+          document.getElementById("dob").setCustomValidity("Age must be between 18 and 55 years."); document.getElementById("dob").reportValidity();
           return;
       }
       
