@@ -1,58 +1,52 @@
-const output = document.getElementById("output");
-const name_element = document.getElementById("name");
-const email_element = document.getElementById("email");
-const password_element = document.getElementById("password");
-const dob_element = document.getElementById("dob");
-const terms_element = document.getElementById("terms");
+document.addEventListener("DOMContentLoaded", function() {
+  let tableBody = document.getElementById("user-table-body");
+  let storedUsers = JSON.parse(localStorage.getItem("users")) || [];
 
-const invalid_email = document.getElementById("invalid_email");
-
-const today = new Date();
-
-const minDate = new Date(
-  today.getFullYear() - 54,
-  today.getMonth(),
-  today.getDate()
-)
-  .toISOString()
-  .split("T")[0];
-
-const maxDate = new Date(
-  today.getFullYear() - 19,
-  today.getMonth(),
-  today.getDate()
-)
-  .toISOString()
-  .split("T")[0];
-
-dob_element.min = minDate;
-dob_element.max = maxDate;
-
-let table = JSON.parse(localStorage.getItem("table_array"));
-
-function onload() {
-  let array = [
-    "<tr><th>Name</th><th>Email</th><th>Password</th><th>Dob</th><th>Accepted terms?</th></tr>",
-  ];
-  if (table == null) {
-    localStorage.setItem("table_array", JSON.stringify(array));
-    output.innerHTML = array.join("");
-  } else {
-    output.innerHTML = table.join("");
+  function calculateAge(dob) {
+      let birthDate = new Date(dob);
+      let today = new Date();
+      let age = today.getFullYear() - birthDate.getFullYear();
+      let monthDiff = today.getMonth() - birthDate.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+          age--;
+      }
+      return age;
   }
-}
 
-function get_data() {
-  let name = name_element.value.trim();
-  let email = email_element.value.trim();
-  let password = password_element.value.trim();
-  let dob = dob_element.value;
-  let terms = terms_element.checked;
+  function renderTable() {
+      tableBody.innerHTML = "";
+      storedUsers.forEach(user => {
+          let newRow = tableBody.insertRow();
+          newRow.insertCell(0).textContent = user.name;
+          newRow.insertCell(1).textContent = user.email;
+          newRow.insertCell(2).textContent = user.password;
+          newRow.insertCell(3).textContent = user.dob;
+          newRow.insertCell(4).textContent = user.acceptedTerms;
+      });
+  }
 
-  table.push(
-    `<tr><td>${name}</td><td>${email}</td><td>${password}</td><td>${dob}</td><td>${terms}</td></tr>`
-  );
-
-  localStorage.setItem("table_array", JSON.stringify(table));
-  output.innerHTML = table.join("");
-}
+  document.getElementById("registration-form").addEventListener("submit", function(event) {
+      event.preventDefault();
+      
+      let name = document.getElementById("name").value;
+      let email = document.getElementById("email").value;
+      let password = document.getElementById("password").value;
+      let dob = document.getElementById("dob").value;
+      let acceptedTerms = document.getElementById("accepted-terms").checked ? "true" : "false";
+      
+      let age = calculateAge(dob);
+      if (age < 18 || age > 55) {
+          alert("Age must be between 18 and 55 years.");
+          return;
+      }
+      
+      let newUser = { name, email, password, dob, acceptedTerms };
+      storedUsers.push(newUser);
+      localStorage.setItem("users", JSON.stringify(storedUsers));
+      
+      renderTable();
+      this.reset();
+  });
+  
+  renderTable();
+});
