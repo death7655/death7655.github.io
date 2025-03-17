@@ -9,17 +9,28 @@ const invalid_email = document.getElementById("invalid_email");
 
 const today = new Date();
 
-function check_email(email) {
-  var reg = /^([A-Za-z0-9_\-\.]){1,}\@([A-Za-z0-9_\-\.]){1,}\.([A-Za-z]{2,4})$/;
-  if (reg.test(email) == false) {
-    alert("Email not valid");
-    return false
-  }
-  return true
-}
+const minDate = new Date(
+  today.getFullYear() - 54,
+  today.getMonth(),
+  today.getDate()
+)
+  .toISOString()
+  .split("T")[0];
+
+const maxDate = new Date(
+  today.getFullYear() - 19,
+  today.getMonth(),
+  today.getDate()
+)
+  .toISOString()
+  .split("T")[0];
+
+dob_element.min = minDate;
+dob_element.max = maxDate;
+
+let table = JSON.parse(localStorage.getItem("table_array"));
 
 function onload() {
-  let table = JSON.parse(localStorage.getItem("table_array"));
   let array = [
     "<tr><th>Name</th><th>Email</th><th>Password</th><th>Dob</th><th>Accepted terms?</th></tr>",
   ];
@@ -38,54 +49,10 @@ function get_data() {
   let dob = dob_element.value;
   let terms = terms_element.checked;
 
-  let dob_date = new Date(dob);
-  let age = today.getFullYear() - dob_date.getFullYear();
-  let monthDiff = today.getMonth() - dob_date.getMonth();
-  let dayDiff = today.getDate() - dob_date.getDate();
+  table.push(
+    `<tr><td>${name}</td><td>${email}</td><td>${password}</td><td>${dob}</td><td>${terms}</td></tr>`
+  );
 
-  if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
-    age--;
-  }
-
-  let valid_email = check_email(email);
-  let valid_age = age > 18 && age < 55;
-  let valid_input = true;
-
-  let class_add = "border_red";
-
-  // Reset validation
-  name_element.classList.remove(class_add);
-  email_element.classList.remove(class_add);
-  password_element.classList.remove(class_add);
-  dob_element.classList.remove(class_add);
-
-  if (name === "") {
-    name_element.classList.add(class_add);
-    valid_input = false;
-  }
-  if (!valid_email) {
-    email_element.classList.add(class_add);
-    valid_input = false;
-  }
-  if (password === "") {
-    password_element.classList.add(class_add);
-    valid_input = false;
-  }
-  if (!valid_age) {
-    dob_element.classList.add(class_add);
-    valid_input = false;
-  }
-
-
-
-  if (valid_input && terms && valid_age && valid_email) {
-    let table = JSON.parse(localStorage.getItem("table_array"));
-
-    table.push(
-      `<tr><td>${name}</td><td>${email}</td><td>${password}</td><td>${dob}</td><td>${terms}</td></tr>`
-    );
-
-    localStorage.setItem("table_array", JSON.stringify(table));
-    output.innerHTML = table.join("");
-  }
+  localStorage.setItem("table_array", JSON.stringify(table));
+  output.innerHTML = table.join("");
 }
