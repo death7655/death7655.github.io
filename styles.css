@@ -88,6 +88,42 @@ body {
     from { opacity: 0; transform: translateY(-10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+.red
+{
+    color: red;
+}
+.green
+{
+    background: radial-gradient(circle, rgba(3,255,83,1) 30%, rgba(123,150,243,1) 64%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.rocket
+{
+    background: linear-gradient(215deg, rgba(192,192,192,1) 55%, rgb(255, 7, 7) 75%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.research
+{
+    background: radial-gradient(circle, rgba(255,255,255,1) 30%, rgba(255,181,147,1) 60%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+
+}
+.pricing-text
+{
+    color: #ff6600;
+}
+.small-text
+{
+    font-size: .6rem;
+}
+.font-size-icon
+{
+    font-size: 5rem;
+}
 
 .btn {
     transition: all 0.3s ease-in-out;
@@ -109,7 +145,7 @@ body {
 
 .feature-card {
     background-color: #1b1a47;
-    height: 40dvh;
+    height: 100%;
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease-in-out;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
