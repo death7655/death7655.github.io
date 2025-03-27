@@ -1,52 +1,76 @@
-document.addEventListener("DOMContentLoaded", function() {
-  let tableBody = document.getElementById("user-table-body");
-  let storedUsers = JSON.parse(localStorage.getItem("users")) || [];
+// create scene, camera, and renderer
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ alpha: true });
 
-  function calculateAge(dob) {
-      let birthDate = new Date(dob);
-      let today = new Date();
-      let age = today.getFullYear() - birthDate.getFullYear();
-      let monthDiff = today.getMonth() - birthDate.getMonth();
-      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-          age--;
-      }
-      return age;
-  }
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.getElementById('threejs-container').appendChild(renderer.domElement);
 
-  function renderTable() {
-      tableBody.innerHTML = "";
-      storedUsers.forEach(user => {
-          let newRow = tableBody.insertRow();
-          newRow.insertCell(0).textContent = user.name;
-          newRow.insertCell(1).textContent = user.email;
-          newRow.insertCell(2).textContent = user.password;
-          newRow.insertCell(3).textContent = user.dob;
-          newRow.insertCell(4).textContent = user.acceptedTerms;
-      });
-  }
+// stars
+const starGeometry = new THREE.BufferGeometry();
+const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.5 });
 
-  document.getElementById("registration-form").addEventListener("submit", function(event) {
-      event.preventDefault();
-      
-      let name = document.getElementById("name").value;
-      let email = document.getElementById("email").value;
-      let password = document.getElementById("password").value;
-      let dob = document.getElementById("dob").value;
-      let acceptedTerms = document.getElementById("accepted-terms").checked ? "true" : "false";
-      
-      let age = calculateAge(dob);
-      if (age < 19 || age > 54) {
-          document.getElementById("dob").setCustomValidity("Age must be between 18 and 55 years."); document.getElementById("dob").reportValidity();
-          return;
-      }
-      
-      let newUser = { name, email, password, dob, acceptedTerms };
-      storedUsers.push(newUser);
-      localStorage.setItem("users", JSON.stringify(storedUsers));
-      
-      renderTable();
-      this.reset();
-  });
-  
-  renderTable();
+const starVertices = [];
+for (let i = 0; i < 1000; i++) {
+    const x = (Math.random() - 0.5) * 2000;
+    const y = (Math.random() - 0.5) * 2000;
+    const z = (Math.random() - 0.5) * 2000;
+    starVertices.push(x, y, z);
+}
+
+starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
+const stars = new THREE.Points(starGeometry, starMaterial);
+scene.add(stars);
+
+// soft blue nebula glow
+const nebulaGeometry = new THREE.SphereGeometry(100, 32, 32);
+const nebulaMaterial = new THREE.MeshBasicMaterial({
+    color: 0x304ffe,
+    transparent: true,
+    opacity: 0.05
 });
+const nebula = new THREE.Mesh(nebulaGeometry, nebulaMaterial);
+scene.add(nebula);
+
+const shootingStars = [];
+const shootingStarMaterial = new THREE.MeshBasicMaterial({ color: 0xfff176 });
+for (let i = 0; i < 5; i++) {
+    const geometry = new THREE.SphereGeometry(0.5, 16, 16);
+    const shootingStar = new THREE.Mesh(geometry, shootingStarMaterial);
+    shootingStar.position.set(Math.random() * 100 - 50, Math.random() * 50 - 25, Math.random() * -200);
+    scene.add(shootingStar);
+    shootingStars.push(shootingStar);
+}
+
+camera.position.z = 5;
+
+function animate() {
+    requestAnimationFrame(animate);
+    
+    stars.rotation.x += 0.001;
+    stars.rotation.y += 0.001;
+
+    // shooting stars movement
+    shootingStars.forEach(star => {
+        star.position.z += 2;
+        if (star.position.z > 5) {
+            star.position.set(Math.random() * 100 - 50, Math.random() * 50 - 25, Math.random() * -200);
+        }
+    });
+
+    // camera motion
+    camera.position.x = Math.sin(Date.now() * 0.0001) * 2;
+    camera.position.y = Math.cos(Date.now() * 0.0001) * 2;
+    camera.lookAt(scene.position);
+
+    renderer.render(scene, camera);
+}
+
+animate();
+
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
