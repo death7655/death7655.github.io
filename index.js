@@ -1,71 +1,129 @@
-// create scene, camera, and renderer
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ alpha: true });
 
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.getElementById('threejs-container').appendChild(renderer.domElement);
 
-// stars
-const starGeometry = new THREE.BufferGeometry();
-const starMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 0.5 });
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
 
-const starVertices = [];
-for (let i = 0; i < 1000; i++) {
-    const x = (Math.random() - 0.5) * 2000;
-    const y = (Math.random() - 0.5) * 2000;
-    const z = (Math.random() - 0.5) * 2000;
-    starVertices.push(x, y, z);
+// Lighting
+scene.add(new THREE.AmbientLight(0xaaaaaa, 1.0));
+
+// Starfield
+const createStarField = (count, size, range, opacity) => {
+    const geometry = new THREE.BufferGeometry();
+    const material = new THREE.PointsMaterial({ size, transparent: true, opacity, vertexColors: true });
+    
+    const vertices = [];
+    const colors = [];
+    for (let i = 0; i < count; i++) {
+        const x = (Math.random() - 0.5) * range;
+        const y = (Math.random() - 0.5) * range;
+        const z = (Math.random() - 0.5) * range;
+        vertices.push(x, y, z);
+        
+        const color = new THREE.Color();
+        const colorOptions = [0xffffff, 0xff4500, 0x87ceeb];
+        color.setHex(colorOptions[Math.floor(Math.random() * colorOptions.length)]);
+        colors.push(color.r, color.g, color.b);
+    }
+    
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+    geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+    
+    const points = new THREE.Points(geometry, material);
+    scene.add(points);
+    return points;
+};
+
+const stars = createStarField(2000, 3, 4000, 0.9);
+const bgStars = createStarField(10000, 6, 20000, 0.6);
+
+// Generate random solar systems
+const solarSystems = [];
+for (let i = 0; i < 3; i++) {
+    const system = new THREE.Group();
+    const star = new THREE.Mesh(
+        new THREE.SphereGeometry(7, 32, 32),
+        new THREE.MeshStandardMaterial({ emissive: 0xffcc00, emissiveIntensity: 2 })
+    );
+    
+    const starLight = new THREE.PointLight(0xffcc00, 1.5, 100);
+    starLight.position.set(0, 0, 0);
+    system.add(star);
+    system.add(starLight);
+    
+    const planets = [];
+    for (let j = 0; j < 3 + Math.floor(Math.random() * 5); j++) {
+        const radius = Math.random() * 2.5 + 1.5;
+        const planet = new THREE.Mesh(
+            new THREE.SphereGeometry(radius, 32, 32),
+            new THREE.MeshStandardMaterial({ color: Math.random() * 0xffffff, emissive: Math.random() * 0xffffff, emissiveIntensity: 0.3 })
+        );
+        planet.position.set(Math.random() * 50 - 25, Math.random() * 20 - 10, Math.random() * 50 - 25);
+        planets.push({ mesh: planet, angle: Math.random() * Math.PI * 2, speed: Math.random() * 0.02 + 0.01 });
+        system.add(planet);
+    }
+    
+    system.position.set(Math.random() * 800 - 400, Math.random() * 400 - 200, Math.random() * -1000);
+    scene.add(system);
+    solarSystems.push({ system, planets });
 }
 
-starGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
-const stars = new THREE.Points(starGeometry, starMaterial);
-scene.add(stars);
+const asteroids = createStarField(500, 2, 1000, 0.9);
+asteroids.position.z = -300;
 
-// soft blue nebula glow
-const nebulaGeometry = new THREE.SphereGeometry(100, 32, 32);
-const nebulaMaterial = new THREE.MeshBasicMaterial({
-    color: 0x304ffe,
-    transparent: true,
-    opacity: 0.05
-});
-const nebula = new THREE.Mesh(nebulaGeometry, nebulaMaterial);
-scene.add(nebula);
+const shootingStars = createStarField(10, 4, 1000, 0.9);
 
-const shootingStars = [];
-const shootingStarMaterial = new THREE.MeshBasicMaterial({ color: 0xfff176 });
-for (let i = 0; i < 5; i++) {
-    const geometry = new THREE.SphereGeometry(0.5, 16, 16);
-    const shootingStar = new THREE.Mesh(geometry, shootingStarMaterial);
-    shootingStar.position.set(Math.random() * 100 - 50, Math.random() * 50 - 25, Math.random() * -200);
-    scene.add(shootingStar);
-    shootingStars.push(shootingStar);
-}
-
-camera.position.z = 5;
+camera.position.z = 10;
 
 function animate() {
     requestAnimationFrame(animate);
+    controls.update();
     
-    stars.rotation.x += 0.001;
-    stars.rotation.y += 0.001;
-
-    // shooting stars movement
-    shootingStars.forEach(star => {
-        star.position.z += 2;
-        if (star.position.z > 5) {
-            star.position.set(Math.random() * 100 - 50, Math.random() * 50 - 25, Math.random() * -200);
+    const positions = stars.geometry.attributes.position.array;
+    for (let i = 2; i < positions.length; i += 3) {
+        positions[i] += 1.5;
+        if (positions[i] > 200) positions[i] = -200;
+    }
+    stars.geometry.attributes.position.needsUpdate = true;
+    
+    const bgPositions = bgStars.geometry.attributes.position.array;
+    for (let i = 2; i < bgPositions.length; i += 3) {
+        bgPositions[i] += 0.3;
+        if (bgPositions[i] > 500) bgPositions[i] = -500;
+    }
+    bgStars.geometry.attributes.position.needsUpdate = true;
+    
+    solarSystems.forEach(({ system, planets }) => {
+        system.position.z += 1;
+        if (system.position.z > 30) {
+            system.position.set(Math.random() * 800 - 400, Math.random() * 400 - 200, Math.random() * -1000);
         }
+        
+        planets.forEach(planet => {
+            planet.angle += planet.speed;
+            planet.mesh.position.x = Math.cos(planet.angle) * 20;
+            planet.mesh.position.z = Math.sin(planet.angle) * 20;
+        });
     });
-
-    // camera motion
-    camera.position.x = Math.sin(Date.now() * 0.0001) * 2;
-    camera.position.y = Math.cos(Date.now() * 0.0001) * 2;
-    camera.lookAt(scene.position);
-
+    
+    // Shooting stars effect
+    const sPositions = shootingStars.geometry.attributes.position.array;
+    for (let i = 0; i < sPositions.length; i += 3) {
+        sPositions[i] -= 5;
+        sPositions[i + 1] -= 2;
+        if (sPositions[i] < -500) {
+            sPositions[i] = (Math.random() - 0.5) * 1000;
+            sPositions[i + 1] = (Math.random() - 0.5) * 1000;
+        }
+    }
+    shootingStars.geometry.attributes.position.needsUpdate = true;
+    
     renderer.render(scene, camera);
 }
-
 animate();
 
 window.addEventListener('resize', () => {
@@ -73,4 +131,3 @@ window.addEventListener('resize', () => {
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
-
