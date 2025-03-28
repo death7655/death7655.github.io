@@ -1,6 +1,6 @@
 /* General Styles */
 body {
-    background: linear-gradient(-45deg, #06042b, #110327, #1b1a47, #110327, #06042b);
+    background: linear-gradient(-45deg, #0c061e, #060115, #0a0828, #060115, #02010d);
     background-size: 600% 600%;
     animation: backgroundAnimation 10s infinite ease-in-out;
     color: #e0e0e0;
@@ -12,21 +12,13 @@ body {
 /* Navbar Styling */
 /* Navbar Base Styling */
 .navbar {
-    background: rgba(17, 3, 39, 0.7); /* Semi-transparent for glass effect */
-    backdrop-filter: blur(8px); /* Frosted glass effect */
+    background: rgba(17, 3, 39, 0.7); 
+    backdrop-filter: blur(8px);
     box-shadow: 0px 4px 12px rgba(255, 255, 255, 0.05);
     padding: 12px 20px;
     transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
-/* Navbar Changes on Scroll */
-.navbar.scrolled {
-    background: rgba(17, 3, 39, 0.95);
-    backdrop-filter: blur(12px);
-    box-shadow: 0px 6px 15px rgba(255, 255, 255, 0.1);
-}
-
-/* Navbar Links */
 .navbar-nav .nav-link {
     color: #ffffff !important;
     font-size: 1.1rem;
@@ -37,14 +29,12 @@ body {
     position: relative;
 }
 
-/* Navbar Link Hover Effect */
 .navbar-nav .nav-link:hover {
     color: #f4a261 !important;
     text-shadow: 0px 0px 12px rgba(244, 162, 97, 0.9);
     transform: translateY(-2px);
 }
 
-/* Animated Underline on Hover */
 .navbar-nav .nav-link::after {
     content: "";
     display: block;
@@ -62,7 +52,6 @@ body {
     width: 80%;
 }
 
-/* Responsive Navbar */
 @media (max-width: 991px) {
     .navbar-nav {
         text-align: center;
@@ -114,7 +103,7 @@ body {
 }
 .pricing-text
 {
-    color: #ff6600;
+    color: #7b2ebf;
 }
 .small-text
 {
@@ -144,7 +133,7 @@ body {
 }
 
 .feature-card {
-    background-color: #1b1a47;
+    background-color: #131233;
     height: 100%;
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease-in-out;
