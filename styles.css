@@ -1,4 +1,3 @@
-/* General Styles */
 body {
     background: linear-gradient(-45deg, #0c061e, #060115, #0a0828, #060115, #02010d);
     background-size: 600% 600%;
@@ -9,8 +8,6 @@ body {
     scroll-behavior: smooth;
 }
 
-/* Navbar Styling */
-/* Navbar Base Styling */
 .navbar {
     background: rgba(17, 3, 39, 0.7); 
     backdrop-filter: blur(8px);
@@ -156,4 +153,45 @@ body {
     100% { background-position: 0% 50%; }
 }
 
+#something_cool
+{
+    background: #000
+    
+}
+#something_cool::-webkit-scrollbar
+{
+    display: none;
+}
+.custom_input {
+    background-color: #222;
+    border: 2px solid #444;
+    color: #fff;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 16px;
+    transition: all 0.3s ease-in-out;
+    box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.1);
+}
+.welcome
+{
+    font-size: 4rem;
+}
+.request
+{
+    font-size: 1.5rem;
+}
+canvas
+{
+    position: fixed;
+    z-index: -1;
+}
+
+@keyframes moveGradient {
+    from {
+        background-position: 0 0%;
+    }
+    to {
+        background-position: 0 100%;
+    }
+}
 
