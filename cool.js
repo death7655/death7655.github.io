@@ -14,12 +14,12 @@ const earthMaterial = new THREE.MeshStandardMaterial({ map: earthTexture });
 const earth = new THREE.Mesh(earthGeometry, earthMaterial);
 scene.add(earth);
 
-const moonGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+const moonGeometry = new THREE.SphereGeometry(.6, 100, 1000);
 const moonMaterial = new THREE.MeshStandardMaterial({ map: moonTexture });
 const moon = new THREE.Mesh(moonGeometry, moonMaterial);
 scene.add(moon);
 
-const light = new THREE.PointLight(0xffffff, 1.5);
+const light = new THREE.PointLight(0xffffff, 1.75);
 light.position.set(5, 5, 5);
 scene.add(light);
 
