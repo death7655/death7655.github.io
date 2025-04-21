@@ -1,6 +1,6 @@
 const scene = new THREE.Scene();
 
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const camera = new THREE.PerspectiveCamera(85, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.getElementById('threejs-container').appendChild(renderer.domElement);
@@ -67,7 +67,7 @@ for (let i = 0; i < 3; i++) {
         system.add(planet);
     }
     
-    system.position.set(Math.random() * 800 - 400, Math.random() * 400 - 200, Math.random() * -1000);
+    system.position.set(Math.random() * 800 - 400, Math.random() * 400 - 200, Math.random() * -1500);
     scene.add(system);
     solarSystems.push({ system, planets });
 }
@@ -85,8 +85,8 @@ function animate() {
     
     const positions = stars.geometry.attributes.position.array;
     for (let i = 2; i < positions.length; i += 3) {
-        positions[i] += 1.5;
-        if (positions[i] > 200) positions[i] = -200;
+        positions[i] += 5;
+        if (positions[i] > 200) positions[i] = -10000;
     }
     stars.geometry.attributes.position.needsUpdate = true;
     
@@ -100,7 +100,7 @@ function animate() {
     solarSystems.forEach(({ system, planets }) => {
         system.position.z += 1;
         if (system.position.z > 30) {
-            system.position.set(Math.random() * 800 - 400, Math.random() * 400 - 200, Math.random() * -1000);
+            system.position.set(Math.random() * 800 - 400, Math.random() * 400 - 200, Math.random() * -1500);
         }
         
         planets.forEach(planet => {
