@@ -8,6 +8,7 @@ body {
     scroll-behavior: smooth;
 }
 
+
 .navbar {
     background: rgba(17, 3, 39, 0.7); 
     backdrop-filter: blur(8px);
@@ -116,19 +117,6 @@ body {
     border-radius: 8px;
 }
 
-.btn-outline-light {
-    border: 2px solid rgba(255, 255, 255, 0.8);
-    color: #ffffff;
-    background-color: transparent;
-}
-
-.btn-outline-light:hover {
-    background-color: rgba(3, 8, 95, 0.498);
-    border-color: rgba(255, 255, 255, 1);
-    transform: scale(1.05);
-    box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.5);
-}
-
 .feature-card {
     background-color: #131233;
     height: 100%;
@@ -153,6 +141,9 @@ body {
     100% { background-position: 0% 50%; }
 }
 
+/* cool.html */
+
+
 #something_cool
 {
     background: #000
@@ -162,6 +153,8 @@ body {
 {
     display: none;
 }
+
+
 .custom_input {
     background-color: #222;
     border: 2px solid #444;
