@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,21 +8,20 @@
     <link rel="stylesheet" href="styles.css">
     <script src="main.js" defer></script>
 </head>
+
 <body>
     <div class="wrapper">
         <div class="container">
             <header>
                 <h1>Checksum Validator</h1>
-                <p class="subtitle">Secure validation for financial and retail standards.</p>
+                <p class="subtitle">Enterprise-grade validation for Luhn, ISBN, and UPC standards.</p>
             </header>
 
             <div id="visual-preview" class="preview-box luhn-mode">
                 <div class="card-content">
                     <span id="preview-label">CREDIT CARD</span>
-                    <div id="preview-number">#### #### #### ####</div>
-                    <div class="card-footer">
-                        <span id="preview-subtext">VALIDATOR</span>
-                    </div>
+                    <div id="preview-number">0000 0000 0000 0000</div>
+                    <span id="preview-subtext">VALIDATOR</span>
                 </div>
             </div>
 
@@ -42,11 +42,17 @@
 
                 <button class="btn-primary" onclick="checkNumber()">Validate Number</button>
             </div>
-            
+
             <div id="result-display">
                 <p id="result-text">Enter a number to begin</p>
+            </div>
+
+            <div id="logic-steps" class="steps-container" style="display: none;">
+                <h3>Execution Logic</h3>
+                <div id="steps-content"></div>
             </div>
         </div>
     </div>
 </body>
+
 </html>
