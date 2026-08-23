@@ -137,6 +137,7 @@ body::before{
   transform-origin: 2px 24px;
 }
 @keyframes orbitSpin{ to{ transform: rotate(360deg); } }
+.spin{ animation: orbitSpin 0.9s linear infinite; }
 .brand-mark svg{ width:17px; height:17px; }
 .brand-text{ display:flex; flex-direction:column; line-height:1.15; }
 .brand-title{ font-size:14.5px; font-weight:800; letter-spacing:-0.015em; }
@@ -437,7 +438,9 @@ input[type="range"]::-moz-range-thumb{
 }
 
 /* ---------- Time dial ---------- */
-.dial-wrap{ display:flex; align-items:center; gap:16px; }
+.dial-wrap{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+#play-day-btn{ margin-left:auto; gap:6px; }
+#play-day-btn.playing{ background:linear-gradient(155deg, var(--purple) 0%, var(--purple-strong) 100%); color:#fff; border-color:transparent; }
 #dial-svg{ flex:0 0 auto; cursor:grab; touch-action:none; }
 #dial-svg:active{ cursor:grabbing; }
 .dial-readout{ display:flex; flex-direction:column; gap:4px; }
@@ -482,6 +485,18 @@ input[type="range"]::-moz-range-thumb{
 .big-stat .cap{ font-size:11.5px; color:var(--ink-soft); font-weight:500; }
 
 .mini-note{ font-size:10.5px; color:var(--ink-faint); line-height:1.5; margin-top:10px; }
+
+.impact-strip{ display:flex; gap:10px; margin-top:12px; }
+.impact-item{
+  flex:1; display:flex; align-items:center; gap:9px; padding:10px 12px;
+  background: linear-gradient(155deg, var(--green-soft) 0%, var(--surface) 100%);
+  border:1px solid color-mix(in srgb, var(--green) 20%, var(--line-2));
+  border-radius: var(--radius-sm);
+}
+.impact-item svg{ width:20px; height:20px; flex:0 0 auto; color: var(--green-strong); }
+.impact-item div{ display:flex; flex-direction:column; line-height:1.25; }
+.impact-item .mono{ font-size:14px; font-weight:700; color: var(--ink); }
+.impact-label{ font-size:10px; color:var(--ink-soft); }
 .mini-note b{ color:var(--ink-soft); font-weight:600; }
 
 /* entrance */
@@ -687,6 +702,9 @@ input[type="range"]::-moz-range-thumb{
               <button class="btn" id="geocode-btn" title="Locate and rebuild the real neighborhood">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               </button>
+              <button class="btn ghost" id="use-location-btn" title="Use my current location">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+              </button>
             </div>
           </div>
 
@@ -771,11 +789,40 @@ input[type="range"]::-moz-range-thumb{
             </div>
           </div>
 
+          <div class="readout-row">
+            <span class="readout-label">System cost (ex-GST, before subsidy)</span>
+            <span class="readout-value mono" id="engine1-gross-cost">₹—</span>
+          </div>
+          <div class="readout-row">
+            <span class="readout-label">Subsidy amount</span>
+            <span class="readout-value mono" id="engine1-subsidy-amount">− ₹—</span>
+          </div>
+          <div class="readout-row">
+            <span class="readout-label">GST (5%)</span>
+            <span class="readout-value mono" id="engine1-gst">+ ₹—</span>
+          </div>
+          <div class="readout-row">
+            <span class="readout-label">Net amount payable</span>
+            <span class="readout-value mono" id="engine1-net-payable">₹—</span>
+          </div>
+
           <div class="big-stat">
             <span class="num mono" id="engine1-payback">—</span>
             <span class="cap">Estimated payback period, years</span>
           </div>
-          <div class="mini-note">Illustrative estimate: ₹55,000/kWp installed, 80% performance ratio, ₹7/unit tariff, tiered subsidy on system size. Not financial advice — confirm current MNRE / PM Surya Ghar rates before deciding.</div>
+          <div class="mini-note">Illustrative estimate: ₹55,000/kWp installed (ex-GST), 5% GST on the subsidised amount (bundled EPC rate since the Sep 2025 GST 2.0 reform), 80% performance ratio, ₹7/unit tariff, tiered subsidy on system size. Not financial advice — confirm current MNRE / PM Surya Ghar rates and applicable GST slab before deciding.</div>
+
+          <div class="impact-strip" id="engine1-impact">
+            <div class="impact-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a9 9 0 0 0-9 9c0 3.5 2 6.5 5 8v3h8v-3c3-1.5 5-4.5 5-8a9 9 0 0 0-9-9z"/><path d="M9 21h6"/></svg>
+              <div><span class="mono" id="engine1-co2">— kg</span><span class="impact-label">CO₂ avoided / yr</span></div>
+            </div>
+            <div class="impact-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 8 9h3l-4 8h4v5h2v-5h4l-4-8h3z"/></svg>
+              <div><span class="mono" id="engine1-trees">—</span><span class="impact-label">mature trees / yr equivalent</span></div>
+            </div>
+          </div>
+          <div class="mini-note">Illustrative: uses a ~0.71 kg CO₂/kWh grid-average emission factor and ~21 kg CO₂ absorbed per mature tree per year — both approximate, for intuition rather than a certified carbon accounting figure.</div>
 
           <hr class="hairline" />
 
@@ -868,6 +915,15 @@ input[type="range"]::-moz-range-thumb{
               <span class="dial-time mono" id="dial-time-text">12:00</span>
               <span class="dial-phase" id="dial-phase-text">Solar peak · irradiance maximal</span>
             </div>
+            <button class="btn ghost" id="play-day-btn" title="Animate a full 24-hour cycle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="6 3 20 12 6 21 6 3"/></svg>
+              <span id="play-day-label">Play a day</span>
+            </button>
+          </div>
+
+          <div class="field" style="margin-top:4px;">
+            <label>24-hour feeder load profile <span class="mini-note" style="display:inline;margin:0;">— shaded band is reverse (export) flow</span></label>
+            <canvas id="load-profile-canvas" width="600" height="120" style="width:100%;height:auto;display:block;border-radius:var(--radius-sm);background:var(--panel-2);"></canvas>
           </div>
 
           <hr class="hairline" />
@@ -1067,7 +1123,10 @@ const FIN = {
   USABLE_FRACTION: 0.65,      // discounts shading, vents, water tanks
   M2_PER_KW: 10,              // rule-of-thumb panel density
   PERFORMANCE_RATIO: 0.8,     // soiling, temperature derate, inverter losses
-  INSTALL_COST_PER_KW: 55000, // ₹, illustrative 2026 blended cost
+  INSTALL_COST_PER_KW: 55000, // ₹, illustrative 2026 blended cost, ex-GST
+  GST_RATE: 0.05,             // illustrative — complete rooftop "solar power generating systems" are taxed at 5% GST since the Sep 2025 GST 2.0 reform (was 12% from Jul 2022–Sep 2025)
+  CO2_KG_PER_KWH: 0.71,       // illustrative — approximate CEA India grid-average CO2 emission factor
+  TREE_ABSORPTION_KG_YR: 21,  // illustrative — commonly-cited CO2 absorbed per mature tree per year
   TARIFF_RATE: 7,             // ₹/unit net-metering export credit
   CONSUMPTION_TARIFF: 6.5,    // ₹/unit, illustrative average slab rate for back-calculating usage from a bill
 };
@@ -1082,12 +1141,20 @@ function computeCitizenYield({ roofAreaM2, ghi }) {
   else if (capacityKW <= 3) subsidyPct = 0.4;
   else subsidyPct = 0.2;
 
+  // Subsidy is applied against the ex-GST benchmark cost (as under PM Surya
+  // Ghar), then GST is charged on top of the subsidised amount the
+  // homeowner actually pays.
   const grossCost = capacityKW * FIN.INSTALL_COST_PER_KW;
-  const netCost = grossCost * (1 - subsidyPct);
+  const subsidyAmount = grossCost * subsidyPct;
+  const netCost = grossCost - subsidyAmount; // pre-GST amount payable
+  const gstAmount = netCost * FIN.GST_RATE;
+  const totalPayable = netCost + gstAmount; // what the homeowner actually pays
   const annualSavings = annualYieldKWh * FIN.TARIFF_RATE;
-  const paybackYears = annualSavings > 0 ? netCost / annualSavings : Infinity;
+  const paybackYears = annualSavings > 0 ? totalPayable / annualSavings : Infinity;
+  const co2SavedKgYr = annualYieldKWh * FIN.CO2_KG_PER_KWH;
+  const treesEquivalent = co2SavedKgYr / FIN.TREE_ABSORPTION_KG_YR;
 
-  return { capacityKW, annualYieldKWh, subsidyPct, netCost, annualSavings, paybackYears };
+  return { capacityKW, annualYieldKWh, subsidyPct, grossCost, subsidyAmount, netCost, gstAmount, totalPayable, annualSavings, paybackYears, co2SavedKgYr, treesEquivalent };
 }
 
 /**
@@ -1417,6 +1484,7 @@ class Scene3D {
     this.wires = [];
     this.poles = [];
     this.feederSegments = [];
+    this.lampBulbs = [];
     this.particlePool = [];
     this.badges = [];      // CSS2DObject telemetry badges, torn down/rebuilt with the neighborhood
     this.exportBadges = []; // { obj, el, valueEl, house } subset used for live per-house updates
@@ -1427,6 +1495,7 @@ class Scene3D {
     this._initCamera();
     this._initLights();
     this._initFog();
+    this._initSky();
     this._buildGround();
     this._buildShadowTexture();
     this._buildPadTexture();
@@ -1516,6 +1585,133 @@ class Scene3D {
     const fill = new THREE.DirectionalLight(0xdce8ff, 0.18);
     fill.position.set(-12, 10, -14);
     this.scene.add(fill);
+    // Kept as instance refs so setTimeOfDay() can retint/reposition them
+    // as the hour dial moves, instead of the static rig above being final.
+    this.hemiLight = hemi;
+    this.sunLight = dir;
+    this.fillLight = fill;
+  }
+
+  /** A day/night sky: a big inward-facing dome sphere behind everything
+   *  (so the WebGL canvas always has real sky color to composite against,
+   *  independent of the page's own background gradient) plus a sun and
+   *  moon billboard that arc across it. Colors/positions are driven purely
+   *  by setTimeOfDay(hour) — this method just builds the meshes once. */
+  _initSky() {
+    const skyGeo = new THREE.SphereGeometry(850, 24, 16);
+    const skyMat = new THREE.MeshBasicMaterial({ color: 0xcfe8fb, side: THREE.BackSide, fog: false, depthWrite: false });
+    this.skydome = new THREE.Mesh(skyGeo, skyMat);
+    this.scene.add(this.skydome);
+
+    this.sun = this._makeGlowSprite(0xfff3d0, 0xffb703);
+    this.sun.scale.set(9, 9, 1);
+    this.scene.add(this.sun);
+
+    this.moon = this._makeGlowSprite(0xeef2ff, 0x93a5d9);
+    this.moon.scale.set(6, 6, 1);
+    this.scene.add(this.moon);
+
+    this.starField = this._buildStarField();
+    this.scene.add(this.starField);
+  }
+
+  /** Small radial-gradient sprite used for both the sun and the moon —
+   *  a soft core fading to a colored halo, cheap and reads well against
+   *  the flat skydome at any zoom level. */
+  _makeGlowSprite(coreHex, haloHex) {
+    const cvs = document.createElement("canvas");
+    cvs.width = cvs.height = 128;
+    const ctx = cvs.getContext("2d");
+    const core = new THREE.Color(coreHex).getStyle();
+    const halo = new THREE.Color(haloHex).getStyle();
+    const grad = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+    grad.addColorStop(0, core);
+    grad.addColorStop(0.35, core);
+    grad.addColorStop(0.7, halo.replace("rgb", "rgba").replace(")", ",0.35)"));
+    grad.addColorStop(1, halo.replace("rgb", "rgba").replace(")", ",0)"));
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 128, 128);
+    const tex = new THREE.CanvasTexture(cvs);
+    const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, fog: false });
+    return new THREE.Sprite(mat);
+  }
+
+  /** A sparse point-cloud of stars on the inside of the skydome, faded in
+   *  only at night by setTimeOfDay() adjusting its material opacity. */
+  _buildStarField() {
+    const count = 500;
+    const positions = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(Math.random() * 0.85); // keep stars above the horizon band
+      const r = 800;
+      positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+      positions[i * 3 + 1] = Math.abs(r * Math.cos(phi)) + 40;
+      positions[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    const mat = new THREE.PointsMaterial({ color: 0xffffff, size: 1.6, transparent: true, opacity: 0, fog: false, sizeAttenuation: false });
+    return new THREE.Points(geo, mat);
+  }
+
+  /**
+   * Drive the entire lighting/sky rig from a 0–24 hour value: sun/moon
+   * position along an east–west arc, warm-to-cool color temperature shift,
+   * sky + fog color, and streetlamp on/off. Called once per recompute()
+   * so it stays in sync with the same hour the physics engine is using.
+   */
+  setTimeOfDay(hour) {
+    // 0 at 06:00 (sunrise, sun at the eastern horizon), π at 18:00 (sunset).
+    const theta = ((hour - 6) / 24) * Math.PI * 2;
+    const sunDir = new THREE.Vector3(Math.cos(theta), Math.sin(theta), 0.35).normalize();
+    const sunAlt = sunDir.y; // -1..1, >0 is above the horizon
+
+    const dist = 220;
+    this.sun.position.copy(sunDir).multiplyScalar(dist);
+    this.moon.position.copy(sunDir).multiplyScalar(-dist);
+    this.sun.visible = sunAlt > -0.06;
+    this.moon.visible = sunAlt < 0.06;
+    this.sun.material.opacity = THREE.MathUtils.clamp((sunAlt + 0.06) / 0.2, 0, 1);
+    this.moon.material.opacity = THREE.MathUtils.clamp((0.06 - sunAlt) / 0.2, 0, 1);
+
+    // Daylight factor: 0 through the dead of night, 1 at full midday sun,
+    // with a smooth dawn/dusk ramp rather than a hard day/night cut.
+    const day = THREE.MathUtils.clamp((sunAlt + 0.12) / 0.5, 0, 1);
+    const golden = 1 - Math.abs(sunAlt) * 2.2; // peaks near the horizon, ~0 at noon/midnight
+    const goldenAmt = THREE.MathUtils.clamp(golden, 0, 1);
+
+    // Sun light: warm and low-intensity at the horizon, bright near-white overhead.
+    this.sunLight.position.copy(sunDir).multiplyScalar(30);
+    this.sunLight.position.y = Math.max(this.sunLight.position.y, 1.5);
+    const sunWarm = new THREE.Color(0xffb066);
+    const sunNoon = new THREE.Color(0xfff6e0);
+    const sunColor = sunNoon.clone().lerp(sunWarm, goldenAmt);
+    this.sunLight.color.copy(sunColor);
+    this.sunLight.intensity = THREE.MathUtils.lerp(0.05, 0.95, day);
+
+    this.hemiLight.intensity = THREE.MathUtils.lerp(0.22, 1.05, day);
+    this.fillLight.intensity = THREE.MathUtils.lerp(0.05, 0.2, day);
+
+    // Sky/fog color: deep navy at night, peach at dawn/dusk, pale blue at midday.
+    const nightSky = new THREE.Color(0x0b1130);
+    const duskSky = new THREE.Color(0xf6c199);
+    const daySky = new THREE.Color(0xcfe8fb);
+    const skyColor = nightSky.clone().lerp(daySky, day).lerp(duskSky, goldenAmt * (1 - Math.abs(day - 0.5) * 0.4) * (day > 0.02 ? 1 : 0.3));
+    this.skydome.material.color.copy(skyColor);
+    if (this.scene.fog) this.scene.fog.color.copy(skyColor);
+    if (this.renderer) this.renderer.setClearColor(skyColor, 1);
+
+    if (this.starField) this.starField.material.opacity = THREE.MathUtils.clamp(1 - day * 1.6, 0, 0.85);
+
+    // Streetlamps: dark glass by day, warm glow + soft point light once
+    // the sun drops low enough that a real lamp would actually be lit.
+    const lampOn = day < 0.35;
+    const lampMix = THREE.MathUtils.clamp((0.35 - day) / 0.35, 0, 1);
+    for (const { bulb, light } of this.lampBulbs) {
+      bulb.material.color.set(lampOn ? 0xffd27a : 0x3f3f46);
+      light.intensity = lampMix * 0.55;
+    }
   }
 
   _buildGround() {
@@ -1808,6 +2004,7 @@ class Scene3D {
   _buildBackbone(bbox, centerZ) {
     this.poles = [];
     this.feederSegments = [];
+    this.lampBulbs = [];
 
     const spanX = Math.max(bbox.maxX - bbox.minX, 8);
     // One pole roughly every 6–9 m of block frontage — capped so a large
@@ -1840,6 +2037,21 @@ class Scene3D {
       const arm = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.05, 0.05), armMat);
       arm.position.set(x, this.backboneY - 0.15, centerZ);
       this.neighborhoodGroup.add(arm);
+
+      // A streetlamp bulb riding lower on the same pole — dark/glassy by
+      // day, switched to a warm emissive-looking sphere plus a soft point
+      // light at night via setTimeOfDay(). Reuses the pole that's already
+      // there instead of adding separate lamp posts.
+      const bulb = new THREE.Mesh(
+        new THREE.SphereGeometry(0.09, 8, 8),
+        new THREE.MeshBasicMaterial({ color: 0x3f3f46, fog: false })
+      );
+      bulb.position.set(x, this.backboneY - 0.55, centerZ);
+      this.neighborhoodGroup.add(bulb);
+      const lampLight = new THREE.PointLight(0xffcf87, 0, 3.2, 2);
+      lampLight.position.copy(bulb.position);
+      this.neighborhoodGroup.add(lampLight);
+      this.lampBulbs.push({ bulb, light: lampLight });
 
       this.poles.push({ top: poleTop });
       waypoints.push(poleTop);
@@ -2615,6 +2827,95 @@ function chipStyle(pct) {
   return { bg: "var(--red-soft)", fg: "#B91C1C", label: "CRITICAL" };
 }
 
+/**
+ * Sample computeGrid() across a full 24h day at the current penetration and
+ * draw a small load-profile chart: DT thermal load (%) as a filled line,
+ * with the hours where the feeder is exporting (reverse flow) shaded — the
+ * classic "duck curve" shape once penetration gets high enough. Also drops
+ * a marker at the currently-selected hour so it reads as "you are here" on
+ * the same 24h axis the physics engine and the 3D scene are using.
+ */
+function drawLoadProfileChart() {
+  const canvas = $("load-profile-canvas");
+  if (!canvas) return;
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const steps = 48;
+  const samples = [];
+  let maxLoad = 100;
+  for (let i = 0; i <= steps; i++) {
+    const t = (i / steps) * 24;
+    const g = computeGrid({ t, penetrationPct: state.penetrationPct, ghi: state.ghi });
+    samples.push(g);
+    maxLoad = Math.max(maxLoad, g.dtLoadPct);
+  }
+  const padL = 4, padR = 4, padT = 10, padB = 4;
+  const plotW = W - padL - padR, plotH = H - padT - padB;
+  const x = (i) => padL + (i / steps) * plotW;
+  const y = (pct) => padT + plotH - (THREE.MathUtils.clamp(pct, 0, maxLoad) / maxLoad) * plotH;
+
+  // Reference line at 100% DT thermal load (the nameplate limit).
+  const yLimit = y(100);
+  ctx.strokeStyle = "rgba(220,61,67,0.45)";
+  ctx.setLineDash([4, 4]);
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(padL, yLimit); ctx.lineTo(W - padR, yLimit); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Shaded band under the curve wherever the feeder is exporting (reverse flow).
+  ctx.fillStyle = "rgba(124,77,255,0.14)";
+  ctx.beginPath();
+  ctx.moveTo(x(0), padT + plotH);
+  samples.forEach((s, i) => ctx.lineTo(x(i), s.exporting ? y(s.dtLoadPct) : padT + plotH));
+  ctx.lineTo(x(steps), padT + plotH);
+  ctx.closePath();
+  ctx.fill();
+
+  // The load curve itself.
+  ctx.strokeStyle = "#7C4DFF";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  samples.forEach((s, i) => (i === 0 ? ctx.moveTo(x(i), y(s.dtLoadPct)) : ctx.lineTo(x(i), y(s.dtLoadPct))));
+  ctx.stroke();
+
+  // "You are here" marker at the currently-selected hour.
+  const curIdx = (state.hour / 24) * steps;
+  const curX = x(curIdx);
+  const curG = computeGrid({ t: state.hour, penetrationPct: state.penetrationPct, ghi: state.ghi });
+  const curY = y(curG.dtLoadPct);
+  ctx.strokeStyle = "rgba(20,21,26,0.35)";
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(curX, padT); ctx.lineTo(curX, padT + plotH); ctx.stroke();
+  ctx.fillStyle = "#14151A";
+  ctx.beginPath(); ctx.arc(curX, curY, 3.5, 0, Math.PI * 2); ctx.fill();
+}
+
+/** Advances state.hour on a timer to sweep a full 24h cycle, keeping every
+ *  panel (dial, telemetry, 3D lighting, load chart) in sync via the same
+ *  recompute() path a manual drag would use. Toggled by #play-day-btn. */
+let dayPlaybackTimer = null;
+function stopDayPlayback() {
+  if (!dayPlaybackTimer) return;
+  clearInterval(dayPlaybackTimer);
+  dayPlaybackTimer = null;
+  $("play-day-btn")?.classList.remove("playing");
+  const label = $("play-day-label");
+  if (label) label.textContent = "Play a day";
+}
+function toggleDayPlayback(dialApi) {
+  if (dayPlaybackTimer) { stopDayPlayback(); return; }
+  $("play-day-btn").classList.add("playing");
+  $("play-day-label").textContent = "Stop";
+  dayPlaybackTimer = setInterval(() => {
+    state.hour = (state.hour + 0.25) % 24;
+    dialApi.render(state.hour);
+    updateTimeReadouts();
+    recompute();
+  }, 90);
+}
+
 /* ---- Core recompute: physics → DOM + 3D scene ---- */
 let scene3d = null;
 
@@ -2636,10 +2937,14 @@ function recompute() {
   $("tele-voltage").innerHTML = `${grid.voltageRise >= 0 ? "+" : ""}${fmt(grid.voltageRise, 1)} <span class="tele-unit">V</span>`;
   $("tele-adopters").innerHTML = `${grid.adopters} <span class="tele-unit">/ ${GRID.NUM_HOUSES}</span>`;
   $("dot-load").style.background = chip.fg;
+  drawLoadProfileChart();
 
   // Drive the 3D scene
   const adopterFlags = Array.from({ length: GRID.NUM_HOUSES }, (_, i) => i < grid.adopters);
-  if (scene3d) scene3d.setGridState({ dtLoadPct: grid.dtLoadPct, exporting: grid.exporting, adopterFlags, genPerHouseKW: grid.genPerHouse });
+  if (scene3d) {
+    scene3d.setGridState({ dtLoadPct: grid.dtLoadPct, exporting: grid.exporting, adopterFlags, genPerHouseKW: grid.genPerHouse });
+    scene3d.setTimeOfDay(state.hour);
+  }
 
   // Feasibility depends on feeder headroom, so keep it resynced whenever
   // the grid state changes (penetration, hour, or a rebuild).
@@ -2653,7 +2958,13 @@ function recomputeCitizen() {
   $("engine1-subsidy").innerHTML = `${Math.round(result.subsidyPct * 100)} <span class="tele-unit">%</span>`;
   $("engine1-yield").innerHTML = `${fmt(result.annualYieldKWh, 0)} <span class="tele-unit">kWh</span>`;
   $("engine1-savings").innerHTML = `₹${fmt(result.annualSavings, 0)} <span class="tele-unit">/yr</span>`;
+  $("engine1-gross-cost").textContent = `₹${fmt(result.grossCost, 0)}`;
+  $("engine1-subsidy-amount").textContent = `− ₹${fmt(result.subsidyAmount, 0)}`;
+  $("engine1-gst").textContent = `+ ₹${fmt(result.gstAmount, 0)}`;
+  $("engine1-net-payable").textContent = `₹${fmt(result.totalPayable, 0)}`;
   $("engine1-payback").textContent = isFinite(result.paybackYears) ? `${fmt(result.paybackYears, 1)}y` : "—";
+  $("engine1-co2").textContent = `${fmt(result.co2SavedKgYr, 0)} kg`;
+  $("engine1-trees").textContent = `≈ ${fmt(result.treesEquivalent, 0)}`;
   recomputeFeasibility();
 }
 
@@ -2754,10 +3065,36 @@ function setSiteReport({ title, badgeText, badgeClass, sub }) {
   $("site-report-sub").textContent = sub;
 }
 
+/** Resolve the browser's current GPS position, drop it into the lat/lon
+ *  fields, and run the same locate → GHI → buildings pipeline used by the
+ *  address search. Rejects with a readable message on denial/timeout so
+ *  the caller can surface it via the existing toast/error path. */
+function getBrowserLocation() {
+  return new Promise((resolve, reject) => {
+    if (!("geolocation" in navigator)) {
+      reject(new Error("Geolocation isn't available in this browser."));
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
+      (err) => {
+        const messages = {
+          1: "Location permission was denied — allow it in your browser settings and try again.",
+          2: "Your position is currently unavailable.",
+          3: "Location request timed out.",
+        };
+        reject(new Error(messages[err.code] || err.message || "Couldn't get your location."));
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+    );
+  });
+}
+
 /* ---- Full pipeline: geocode (optional) → GHI → real buildings → rebuild scene ---- */
 const MAX_RENDERED_BUILDINGS = 40;
 
 async function locateAndRebuild({ fromSearch }) {
+  stopDayPlayback();
   const geocodeBtn = $("geocode-btn");
   const rebuildBtn = $("rebuild-btn");
   geocodeBtn.disabled = true;
@@ -2976,10 +3313,14 @@ function buildReportText() {
     "ENGINE 1 — ROOFTOP SOLAR YIELD",
     `  Usable roof area:   ${state.roofAreaM2} m²`,
     `  System size:        ${fmt(citizen.capacityKW, 2)} kWp`,
-    `  Subsidy tier:       ${fmt(citizen.subsidyPct * 100, 0)}%`,
+    `  Subsidy tier:       ${fmt(citizen.subsidyPct * 100, 0)}% (− ₹${fmt(citizen.subsidyAmount, 0)})`,
+    `  System cost ex-GST: ₹${fmt(citizen.grossCost, 0)}`,
+    `  GST (5%):           + ₹${fmt(citizen.gstAmount, 0)}`,
+    `  Net amount payable: ₹${fmt(citizen.totalPayable, 0)}`,
     `  Annual yield:       ${fmt(citizen.annualYieldKWh, 0)} kWh`,
     `  Net-metering saving: ₹${fmt(citizen.annualSavings, 0)}/yr`,
     `  Payback period:     ${fmt(citizen.paybackYears, 1)} years`,
+    `  CO2 avoided:        ${fmt(citizen.co2SavedKgYr, 0)} kg/yr (≈ ${fmt(citizen.treesEquivalent, 0)} mature trees)`,
     `  Bill-based sizing:  ${fmt(bill.recommendedKW, 2)} kWp recommended (avg bill ₹${fmt(bill.avgBill, 0)}/mo)`,
     `  Financing tier:     ${cibilTier(state.cibilScore).label} (self-reported CIBIL ${state.cibilScore})`,
     "",
@@ -3061,9 +3402,11 @@ function initExtras() {
 
 /* ---- Wire up all controls ---- */
 function initUI() {
-  buildDial();
+  const dialApi = buildDial();
   updateTimeReadouts();
   updatePenetrationFill();
+
+  $("play-day-btn").addEventListener("click", () => toggleDayPlayback(dialApi));
 
   $("penetration-slider").addEventListener("input", (e) => {
     state.penetrationPct = parseFloat(e.target.value);
@@ -3097,6 +3440,30 @@ function initUI() {
     if (e.key === "Enter") locateAndRebuild({ fromSearch: true });
   });
   $("rebuild-btn").addEventListener("click", () => locateAndRebuild({ fromSearch: false }));
+
+  $("use-location-btn").addEventListener("click", async () => {
+    const btn = $("use-location-btn");
+    const originalHTML = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="spin"><path d="M21 12a9 9 0 1 1-2.64-6.36"/></svg>`;
+    $("status-dot").className = "status-dot";
+    $("status-text").textContent = "Requesting current location…";
+    try {
+      const { lat, lon } = await getBrowserLocation();
+      $("lat-input").value = lat.toFixed(4);
+      $("lon-input").value = lon.toFixed(4);
+      $("address-input").value = "";
+      await locateAndRebuild({ fromSearch: false });
+    } catch (err) {
+      console.warn("[geolocation] failed:", err.message);
+      $("status-dot").className = "status-dot mock";
+      $("status-text").textContent = "Could not get current location";
+      toast({ title: "Location unavailable", message: err.message, accent: "red" });
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = originalHTML;
+    }
+  });
   $("osm-estimate-btn").addEventListener("click", refreshOSMEstimate);
 
   setInterval(tickClock, 1000);
