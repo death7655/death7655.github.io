@@ -86,8 +86,13 @@ body{
 body::before{
   content:'';
   position:fixed; inset:0; z-index:9999; pointer-events:none;
-  opacity:0.5; mix-blend-mode:multiply;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  /* Was mix-blend-mode:multiply — over a WebGL canvas that repaints every
+     animation frame, a blend-mode layer forces the compositor to re-blend
+     the full viewport at 60fps instead of caching this as a static
+     texture. Plain opacity compositing is dramatically cheaper and, at
+     this low an opacity, visually indistinguishable for a grain overlay. */
+  opacity:0.4;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
 }
 
 @media (prefers-reduced-motion: reduce){
@@ -193,9 +198,13 @@ body::before{
   display:flex; align-items:center; gap:6px;
   padding: 5px 9px 5px 8px;
   border-radius: 8px;
-  background: rgba(255,255,255,0.66);
-  backdrop-filter: blur(14px) saturate(1.5);
-  -webkit-backdrop-filter: blur(14px) saturate(1.5);
+  /* Slightly higher base opacity + a lighter blur radius: these badges
+     float over a WebGL canvas that repaints continuously, and backdrop
+     blur cost grows with the square of the radius, so this is a much
+     cheaper per-frame sample while looking near-identical. */
+  background: rgba(255,255,255,0.78);
+  backdrop-filter: blur(7px) saturate(1.4);
+  -webkit-backdrop-filter: blur(7px) saturate(1.4);
   border: 1px solid rgba(9,9,11,0.08);
   box-shadow: 0 6px 16px -8px rgba(9,9,11,0.22), 0 1px 2px rgba(9,9,11,0.04);
   font-family:'IBM Plex Mono', ui-monospace, monospace;
@@ -232,9 +241,13 @@ body::before{
 
 /* ---------- Glass overlays on the 3D stage ---------- */
 .glass{
-  background: rgba(255,255,255,0.72);
-  backdrop-filter: blur(20px) saturate(1.4);
-  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  /* Same trade as .node-badge above: these HUD panels sit directly over
+     the always-animating 3D canvas, so a smaller blur radius (with a
+     touch more opacity to compensate) meaningfully cuts per-frame
+     compositor cost without a visible quality loss. */
+  background: rgba(255,255,255,0.8);
+  backdrop-filter: blur(9px) saturate(1.3);
+  -webkit-backdrop-filter: blur(9px) saturate(1.3);
   border: 1px solid rgba(9,9,11,0.06);
   box-shadow: 0 8px 24px -10px rgba(9,9,11,0.12), 0 1px 3px rgba(9,9,11,0.03);
   border-radius: var(--radius-md);
@@ -352,6 +365,33 @@ body::before{
 .btn:disabled{ opacity:0.45; cursor:default; transform:none; box-shadow:none; }
 .btn-full{ width:100%; justify-content:center; }
 .btn svg{ width:13px; height:13px; }
+.btn-xs{ padding:6px 10px; font-size:10.5px; }
+
+.selected-house-row{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding: 9px 12px; margin-bottom:14px;
+  border-radius: var(--radius-sm); border:1px solid var(--line-2);
+  background: var(--panel-2);
+  transition: background 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+.selected-house-row.active{
+  background: linear-gradient(155deg, var(--blue-soft) 0%, color-mix(in srgb, var(--blue) 12%, var(--blue-soft)) 100%);
+  border-color: color-mix(in srgb, var(--blue) 35%, transparent);
+}
+.selected-house-info{ display:flex; align-items:center; gap:8px; min-width:0; }
+.selected-house-dot{
+  width:7px; height:7px; border-radius:50%; flex:0 0 auto;
+  background: var(--ink-faint);
+}
+.selected-house-dot.active{
+  background: var(--blue);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--blue) 20%, transparent);
+}
+.selected-house-text{
+  font-size:11.5px; font-weight:600; color:var(--ink-soft);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.selected-house-row.active .selected-house-text{ color:var(--blue-strong); }
 
 .badge{
   font-family:'IBM Plex Mono',monospace; font-size:9.5px; font-weight:700;
@@ -673,7 +713,7 @@ input[type="range"]::-moz-range-thumb{
         <div class="legend-item"><span class="legend-dot" style="background:var(--amber)"></span>Warning 75–100%</div>
         <div class="legend-item"><span class="legend-dot" style="background:var(--red)"></span>Overload &gt;100%</div>
         <span class="legend-divider"></span>
-        <span class="legend-hint">Drag to orbit · Scroll to zoom · <kbd class="kbd">/</kbd> search · <kbd class="kbd">R</kbd> rebuild · <kbd class="kbd">E</kbd> export</span>
+        <span class="legend-hint">Drag to orbit · Scroll to zoom · <b>click a house</b> to price its solar · <kbd class="kbd">/</kbd> search · <kbd class="kbd">R</kbd> rebuild · <kbd class="kbd">E</kbd> export</span>
       </div>
     </section>
 
@@ -757,6 +797,14 @@ input[type="range"]::-moz-range-thumb{
                 <div class="section-title">Rooftop Solar Yield</div>
               </div>
             </div>
+          </div>
+
+          <div class="selected-house-row" id="selected-house-row">
+            <div class="selected-house-info">
+              <span class="selected-house-dot" id="selected-house-dot"></span>
+              <span class="selected-house-text" id="selected-house-text">No house selected — showing a generic roof estimate</span>
+            </div>
+            <button class="btn ghost btn-xs" id="clear-house-btn" style="display:none;">Clear</button>
           </div>
 
           <div class="slider-block">
@@ -974,7 +1022,7 @@ input[type="range"]::-moz-range-thumb{
       </div>
       <div class="modal-step">
         <span class="modal-step-dot accent-teal-dot"></span>
-        <div><b>Engine 1 · Citizen Portal</b><span>Size a rooftop system from roof area or a 6-month electricity bill, with payback and financing checks.</span></div>
+        <div><b>Engine 1 · Citizen Portal</b><span>Click any house in the 3D view to price <i>that</i> roof, or size a generic system from roof area or a 6-month electricity bill — either way you get payback and financing checks.</span></div>
       </div>
       <div class="modal-step">
         <span class="modal-step-dot accent-purple-dot"></span>
@@ -1490,6 +1538,14 @@ class Scene3D {
     this.exportBadges = []; // { obj, el, valueEl, house } subset used for live per-house updates
     this.neighborhoodGroup = new THREE.Group();
 
+    // Single-house selection: raycast-driven, independent of the Engine 2
+    // adopter simulation. `onHouseSelect` is set from outside (UI wiring)
+    // and fired with { index, area, isAdopter } on select or null on clear.
+    this.selectedHouseIndex = -1;
+    this.onHouseSelect = null;
+    this.raycaster = new THREE.Raycaster();
+    this.pointer = new THREE.Vector2();
+
     this._initRenderer();
     this._initLabelRenderer();
     this._initCamera();
@@ -1502,6 +1558,8 @@ class Scene3D {
     this._buildRoadTexture();
     this.scene.add(this.neighborhoodGroup);
     this._initControls();
+    this._buildSelectionRing();
+    this._initInteraction();
 
     // Boot with the synthetic 9-house layout; a real address swaps this out
     // via rebuildNeighborhood() once Overpass data arrives.
@@ -1521,9 +1579,21 @@ class Scene3D {
   }
 
   _initRenderer() {
-    this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true, alpha: true });
+    // Perf: on a >=2x display, the pixel grid is already dense enough that
+    // MSAA's extra per-sample cost buys very little visible smoothing on
+    // top of it — so antialiasing is only turned on below that density,
+    // and pixel ratio itself is capped at 1.5 rather than 2 (a 2x cap was
+    // rendering roughly 1.8x the fragment work of 1.5x for a difference
+    // that's hard to see on this kind of flat, low-detail scene).
+    const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5);
+    this.renderer = new THREE.WebGLRenderer({
+      canvas: this.canvas,
+      antialias: pixelRatio < 2,
+      alpha: true,
+      powerPreference: "high-performance",
+    });
     this.renderer.setClearColor(0x000000, 0);
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    this.renderer.setPixelRatio(pixelRatio);
     this.scene = new THREE.Scene();
   }
 
@@ -1570,6 +1640,118 @@ class Scene3D {
     this.controls.minZoom = 0.12;
     this.controls.maxZoom = 4;
     this.controls.update();
+  }
+
+  /** A thin glowing ring dropped under the selected house's footprint.
+   *  Lives directly on the scene (not the neighborhood group) so it
+   *  survives rebuildNeighborhood()'s full teardown — it's just repositioned
+   *  and resized per selection instead of rebuilt. */
+  _buildSelectionRing() {
+    const geo = new THREE.RingGeometry(0.4, 0.46, 40);
+    const mat = new THREE.MeshBasicMaterial({
+      color: 0x2563eb, transparent: true, opacity: 0.7, depthWrite: false, fog: false, side: THREE.DoubleSide,
+    });
+    this.selectionRing = new THREE.Mesh(geo, mat);
+    this.selectionRing.rotation.x = -Math.PI / 2;
+    this.selectionRing.visible = false;
+    this.selectionRing.renderOrder = 6;
+    this.scene.add(this.selectionRing);
+  }
+
+  _positionSelectionRing(house) {
+    const fp = house.footprint;
+    const radius = Math.max(fp.spanX, fp.spanZ) / 2 + 0.4;
+    this.selectionRing.geometry.dispose();
+    this.selectionRing.geometry = new THREE.RingGeometry(radius - 0.07, radius, 40);
+    this.selectionRing.position.set(fp.cx, 0.03, fp.cz);
+  }
+
+  /** Click-to-select a single house: pointerdown/up are compared for
+   *  distance and duration so an orbit drag never gets misread as a click,
+   *  and pointermove drives a rAF-throttled hover cursor. */
+  _initInteraction() {
+    let isDown = false, downX = 0, downY = 0, downT = 0;
+    this.canvas.addEventListener("pointerdown", (e) => {
+      isDown = true; downX = e.clientX; downY = e.clientY; downT = performance.now();
+    });
+    window.addEventListener("pointerup", (e) => {
+      if (!isDown) return;
+      isDown = false;
+      const dist = Math.hypot(e.clientX - downX, e.clientY - downY);
+      const dt = performance.now() - downT;
+      if (dist < 6 && dt < 400) this._handleClick(e);
+    });
+
+    let hoverPending = false;
+    this.canvas.addEventListener("pointermove", (e) => {
+      if (hoverPending) return;
+      hoverPending = true;
+      const clientX = e.clientX, clientY = e.clientY;
+      requestAnimationFrame(() => {
+        hoverPending = false;
+        this._updateHoverCursor(clientX, clientY);
+      });
+    });
+  }
+
+  _pointerNDC(clientX, clientY) {
+    const rect = this.canvas.getBoundingClientRect();
+    return {
+      x: ((clientX - rect.left) / rect.width) * 2 - 1,
+      y: -((clientY - rect.top) / rect.height) * 2 + 1,
+    };
+  }
+
+  _raycastHouses(clientX, clientY) {
+    const ndc = this._pointerNDC(clientX, clientY);
+    this.pointer.set(ndc.x, ndc.y);
+    this.raycaster.setFromCamera(this.pointer, this.camera);
+    const bodies = this.houses.map((h) => h.body).filter(Boolean);
+    return this.raycaster.intersectObjects(bodies, false);
+  }
+
+  _handleClick(e) {
+    const hits = this._raycastHouses(e.clientX, e.clientY);
+    if (hits.length) {
+      const idx = hits[0].object.userData.houseIndex;
+      if (typeof idx === "number") this.selectHouse(idx);
+    } else {
+      this.clearHouseSelection();
+    }
+  }
+
+  _updateHoverCursor(clientX, clientY) {
+    if (!this.canvas.isConnected) return;
+    const hits = this._raycastHouses(clientX, clientY);
+    this.canvas.style.cursor = hits.length ? "pointer" : "";
+  }
+
+  /** Select a single house by index — shows its selection ring, previews
+   *  its rooftop panel rig regardless of the Engine 2 adopter simulation,
+   *  and notifies the UI layer via onHouseSelect. */
+  selectHouse(index) {
+    const house = this.houses[index];
+    if (!house) return;
+    if (this.selectedHouseIndex >= 0 && this.selectedHouseIndex !== index) {
+      const prev = this.houses[this.selectedHouseIndex];
+      if (prev && prev.panel) prev.panel.visible = prev.isAdopter;
+    }
+    this.selectedHouseIndex = index;
+    this._positionSelectionRing(house);
+    this.selectionRing.visible = true;
+    if (house.panel) house.panel.visible = true;
+    if (this.onHouseSelect) this.onHouseSelect({ index, area: house.area, isAdopter: house.isAdopter });
+  }
+
+  clearHouseSelection() {
+    if (this.selectedHouseIndex >= 0) {
+      const prev = this.houses[this.selectedHouseIndex];
+      if (prev && prev.panel) prev.panel.visible = prev.isAdopter;
+    }
+    if (this.selectedHouseIndex === -1 && !this.selectionRing.visible) return;
+    this.selectedHouseIndex = -1;
+    this.selectionRing.visible = false;
+    if (this.onHouseSelect) this.onHouseSelect(null);
   }
 
   _initLights() {
@@ -1873,6 +2055,12 @@ class Scene3D {
     this.badges = [];
     this.exportBadges = [];
 
+    // House indices are about to be rebuilt from scratch, so any existing
+    // selection is stale — clear it up front rather than let a leftover
+    // index silently point at the wrong (or a nonexistent) house below.
+    this.selectedHouseIndex = -1;
+    if (this.selectionRing) this.selectionRing.visible = false;
+
     this._disposeObject(this.neighborhoodGroup);
     this.scene.remove(this.neighborhoodGroup);
     this.neighborhoodGroup = new THREE.Group();
@@ -1917,6 +2105,11 @@ class Scene3D {
     } finally {
       this._frameCamera(centerX, centerZ, Math.max(spanX, spanZ));
     }
+
+    // Selection was cleared at the top of this rebuild — tell the UI layer
+    // so any "House #N selected" badge from the previous neighborhood
+    // reverts to the generic state instead of pointing at a stale index.
+    if (this.onHouseSelect) this.onHouseSelect(null);
 
     // Authoritative post-build house count: this.houses is only populated
     // for isHouse buildings that survived the internal centroid dedup, so
@@ -2459,13 +2652,20 @@ class Scene3D {
         this.exportBadges.push(exportBadge);
       }
 
+      // Tag the body mesh with its future index in this.houses so a
+      // raycast hit can be resolved straight back to this house record.
+      body.userData.houseIndex = this.houses.length;
+
       this.houses.push({
         group,
+        body,
         panel: panelGroup,
         glow,
         exportBadge,
         inverterPoint: mastTop,
         isAdopter: false,
+        area: b.area,
+        footprint: { cx, cz, spanX, spanZ },
       });
       } catch (err) {
         console.warn("[buildHouse] skipped a building entirely due to an unexpected error:", err);
@@ -2586,7 +2786,10 @@ class Scene3D {
     adopterFlags.forEach((isAdopter, i) => {
       const house = this.houses[i];
       house.isAdopter = isAdopter;
-      house.panel.visible = isAdopter;
+      // Keep showing the panel rig on whichever house is currently
+      // selected in Engine 1, even if the Engine 2 adopter simulation
+      // hasn't (yet) turned that house's own export flag on.
+      house.panel.visible = isAdopter || i === this.selectedHouseIndex;
       if (house.exportBadge) {
         house.exportBadge.obj.visible = isAdopter;
         if (isAdopter) {
@@ -2687,6 +2890,21 @@ class Scene3D {
 
 const $ = (id) => document.getElementById(id);
 
+/** Coalesces rapid repeated calls (e.g. many 'input' events between two
+ *  animation frames while dragging a slider) down to one per rAF tick —
+ *  cheap DOM writes (the readout label) still happen immediately in the
+ *  caller; only the heavier recompute is deferred and de-duplicated. */
+function rafDebounce(fn) {
+  let handle = null;
+  return (...args) => {
+    if (handle) return;
+    handle = requestAnimationFrame(() => {
+      handle = null;
+      fn(...args);
+    });
+  };
+}
+
 const state = {
   lat: 12.0958,
   lon: 75.1988,
@@ -2698,6 +2916,8 @@ const state = {
   billMonths: [2400, 2600, 2200, 2900, 3100, 2700],
   cibilScore: 750,
   dtLoadPct: 0, // last computed feeder load, read by the feasibility check
+  selectedHouseIndex: null, // index into scene3d.houses of the clicked house, or null
+  selectedHouseArea: null,  // that house's real footprint area (m²), for the badge text
 };
 
 function fmt(n, digits = 1) {
@@ -2968,6 +3188,45 @@ function recomputeCitizen() {
   recomputeFeasibility();
 }
 
+/** Reflects state.selectedHouse{Index,Area} into the badge row at the top
+ *  of Engine 1 — the only DOM-facing piece of the click-to-select feature. */
+function updateSelectedHouseUi() {
+  const row = $("selected-house-row");
+  const dot = $("selected-house-dot");
+  const text = $("selected-house-text");
+  const clearBtn = $("clear-house-btn");
+  const selected = state.selectedHouseIndex != null;
+  row.classList.toggle("active", selected);
+  dot.classList.toggle("active", selected);
+  clearBtn.style.display = selected ? "" : "none";
+  text.textContent = selected
+    ? `House #${state.selectedHouseIndex + 1} selected — ${fmt(state.selectedHouseArea, 0)} m² footprint`
+    : "No house selected — showing a generic roof estimate";
+}
+
+/** scene3d.onHouseSelect callback: fired with { index, area } when a house
+ *  is clicked in the 3D view, or null when selection is cleared (by the
+ *  Clear button, an empty-ground click, a manual roof-area drag, or a
+ *  neighborhood rebuild). Syncs Engine 1's roof-area input to that house's
+ *  real footprint, the same way the "re-estimate from nearest building"
+ *  button already does for an address search. */
+function handleHouseSelected(payload) {
+  if (!payload) {
+    state.selectedHouseIndex = null;
+    state.selectedHouseArea = null;
+    updateSelectedHouseUi();
+    return;
+  }
+  state.selectedHouseIndex = payload.index;
+  state.selectedHouseArea = payload.area;
+  const clamped = Math.max(15, Math.min(220, Math.round(payload.area)));
+  state.roofAreaM2 = clamped;
+  $("roof-area-slider").value = clamped;
+  $("roof-area-value").textContent = `${clamped} m²`;
+  updateSelectedHouseUi();
+  recomputeCitizen();
+}
+
 /** Bill-based sizing, CIBIL bracket, and the rolled-up feasibility verdict
  *  — all three new panel features share this one render pass since the
  *  verdict depends on outputs from the other two plus Engine 1 and the
@@ -3045,6 +3304,9 @@ async function refreshOSMEstimate() {
     state.roofAreaM2 = Math.max(15, Math.min(220, result.area));
     $("roof-area-slider").value = state.roofAreaM2;
     $("roof-area-value").textContent = `${state.roofAreaM2} m²`;
+    // This is an aggregate estimate over nearby buildings, not one clicked
+    // house, so any active single-house selection no longer applies.
+    scene3d?.clearHouseSelection();
     recomputeCitizen();
     btn.innerHTML = `Matched ${result.count} nearby buildings ✓`;
   } catch (err) {
@@ -3311,6 +3573,9 @@ function buildReportText() {
     `  Feeder size:        ${GRID.NUM_HOUSES} houses, ${GRID.TRANSFORMER_KVA} kVA transformer`,
     "",
     "ENGINE 1 — ROOFTOP SOLAR YIELD",
+    state.selectedHouseIndex != null
+      ? `  Priced house:       House #${state.selectedHouseIndex + 1} on the feeder (clicked in the 3D view)`
+      : `  Priced house:       generic — not tied to a specific house on the feeder`,
     `  Usable roof area:   ${state.roofAreaM2} m²`,
     `  System size:        ${fmt(citizen.capacityKW, 2)} kWp`,
     `  Subsidy tier:       ${fmt(citizen.subsidyPct * 100, 0)}% (− ₹${fmt(citizen.subsidyAmount, 0)})`,
@@ -3408,31 +3673,46 @@ function initUI() {
 
   $("play-day-btn").addEventListener("click", () => toggleDayPlayback(dialApi));
 
+  // Heavier work (3D scene sync, canvas chart redraw, feasibility
+  // recompute) is rAF-debounced per slider — the label text next to each
+  // slider still updates on every raw 'input' event so dragging always
+  // feels instant, but the expensive part is coalesced to once per frame.
+  const scheduleRecompute = rafDebounce(recompute);
+  const scheduleCitizen = rafDebounce(recomputeCitizen);
+  const scheduleFeasibility = rafDebounce(recomputeFeasibility);
+
   $("penetration-slider").addEventListener("input", (e) => {
     state.penetrationPct = parseFloat(e.target.value);
     $("penetration-value").textContent = `${state.penetrationPct}%`;
     updatePenetrationFill();
-    recompute();
+    scheduleRecompute();
   });
 
   $("roof-area-slider").addEventListener("input", (e) => {
+    // A manual drag means the number no longer represents the selected
+    // house's real footprint — drop the selection rather than leave a
+    // stale "House #N selected" badge next to a value the user just
+    // overrode by hand.
+    if (state.selectedHouseIndex != null) scene3d?.clearHouseSelection();
     state.roofAreaM2 = parseFloat(e.target.value);
     $("roof-area-value").textContent = `${state.roofAreaM2} m²`;
-    recomputeCitizen();
+    scheduleCitizen();
   });
+
+  $("clear-house-btn").addEventListener("click", () => scene3d?.clearHouseSelection());
 
   ["bill-m1", "bill-m2", "bill-m3", "bill-m4", "bill-m5", "bill-m6"].forEach((id, i) => {
     $(id).addEventListener("input", (e) => {
       const v = parseFloat(e.target.value);
       state.billMonths[i] = isFinite(v) && v >= 0 ? v : 0;
-      recomputeFeasibility();
+      scheduleFeasibility();
     });
   });
 
   $("cibil-slider").addEventListener("input", (e) => {
     state.cibilScore = parseFloat(e.target.value);
     $("cibil-value").textContent = state.cibilScore;
-    recomputeFeasibility();
+    scheduleFeasibility();
   });
 
   $("geocode-btn").addEventListener("click", () => locateAndRebuild({ fromSearch: true }));
@@ -3476,6 +3756,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   initUI();
   initExtras();
   scene3d = new Scene3D($("scene"));
+  scene3d.onHouseSelect = handleHouseSelected;
 
   $("ghi-value").textContent = `${fmt(state.ghi, 2)} kWh/m²/day`;
   $("ghi-source-tag").textContent = "FALLBACK";
