@@ -562,6 +562,15 @@ input[type="range"]::-moz-range-thumb{
 
 /* responsive fallback */
 @media (max-width: 880px){
+  #topbar{ height:auto; min-height:56px; padding:8px 12px; flex-wrap:wrap; row-gap:8px; }
+  .brand-sub{ display:none; }
+  .brand-title{ font-size:13px; }
+  .brand-mark{ width:30px; height:30px; }
+  .topbar-right{ gap:6px; }
+  .status-pill{ display:none; }
+  .clock{ font-size:11px; }
+  .topbar-divider{ display:none; }
+  .icon-btn{ width:30px; height:30px; }
   #mobile-tabs{
     display:flex; gap:8px; padding: 10px 16px; background:var(--surface);
     border-bottom:1px solid var(--line-2); position:relative; z-index:15;
@@ -580,6 +589,10 @@ input[type="range"]::-moz-range-thumb{
   #layout.show-panel #panel{ flex:1 1 auto; }
   #toast-stack{ left:16px; right:16px; bottom:16px; align-items:stretch; }
   .toast{ max-width:none; }
+  #legend{ flex-wrap:wrap; gap:8px 12px; row-gap:6px; padding:10px 14px; }
+  .legend-hint{ flex-basis:100%; }
+  #hud-load{ min-width:150px; padding:12px 14px; }
+  #hud-load .value{ font-size:26px; }
 }
 </style>
 </head>
