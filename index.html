@@ -4,6 +4,13 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>DISCOM Digital Twin — Satellite Solar Feasibility</title>
+<meta name="description" content="Interactive 3D digital twin for rooftop solar feasibility. Simulate a citizen's payback on real satellite-mapped buildings, and a DISCOM's feeder hosting capacity as solar penetration rises, all in one live model." />
+<meta name="theme-color" content="#0E9F6E" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="DISCOM Digital Twin — Satellite Solar Feasibility" />
+<meta property="og:description" content="Price a rooftop's solar payback and stress-test a feeder's hosting capacity on a real, satellite-mapped neighborhood." />
+<meta name="twitter:card" content="summary" />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%2314151A'/%3E%3Cpath d='M13 2L4 14h6l-1 8 9-12h-6l1-8z' fill='%23fff'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -98,6 +105,17 @@ body::before{
 @media (prefers-reduced-motion: reduce){
   *{ animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
 }
+
+/* ---------- Keyboard focus (mouse users never see this; :focus-visible
+   only engages for keyboard/AT navigation, so it never adds visual noise
+   to the point-and-click flow the rest of the UI is tuned for) --------- */
+:focus{ outline:none; }
+.btn:focus-visible, .icon-btn:focus-visible, .mobile-tab:focus-visible,
+input:focus-visible, .selected-house-row .btn:focus-visible{
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+.icon-btn:focus-visible{ outline-offset: 1px; }
 
 /* ---------- App shell ---------- */
 #app{ height:100vh; display:flex; flex-direction:column; }
@@ -312,6 +330,7 @@ body::before{
 .section.accent-blue{ --accent: var(--blue); }
 .section.accent-teal{ --accent: var(--teal); }
 .section.accent-purple{ --accent: var(--purple); }
+.section.accent-amber{ --accent: var(--amber); }
 
 .section-head{ display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:16px; gap:10px; }
 .section-head-left{ display:flex; align-items:flex-start; gap:11px; }
@@ -427,6 +446,32 @@ body::before{
 .readout-value{ font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:600; }
 
 .hairline{ height:1px; background:var(--line-2); margin:18px 0; border:none; }
+
+/* ---------- Saved scenarios ---------- */
+.scenario-save-row{ display:flex; gap:8px; }
+.scenario-save-row input{ flex:1 1 auto; }
+.scenario-list{ display:flex; flex-direction:column; gap:8px; margin-top:14px; }
+.scenario-empty{ font-size:11.5px; color:var(--ink-faint); line-height:1.6; margin-top:14px; }
+.scenario-row{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding: 10px 12px; border-radius: var(--radius-sm);
+  border:1px solid var(--line-2); background:var(--panel-2);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.scenario-row:hover{ background:var(--surface); border-color: color-mix(in srgb, var(--accent, var(--ink)) 30%, var(--line-2)); }
+.scenario-row-info{ min-width:0; display:flex; flex-direction:column; gap:2px; }
+.scenario-row-name{ font-size:12px; font-weight:700; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.scenario-row-meta{ font-family:'IBM Plex Mono',monospace; font-size:9.5px; color:var(--ink-faint); letter-spacing:0.02em; }
+.scenario-row-actions{ display:flex; align-items:center; gap:6px; flex:0 0 auto; }
+.scenario-icon-btn{
+  width:26px; height:26px; border-radius:100px; flex:0 0 auto;
+  display:flex; align-items:center; justify-content:center; cursor:pointer;
+  border:1px solid var(--line-2); background: var(--surface); color: var(--ink-soft);
+  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+.scenario-icon-btn:hover{ color:var(--blue); border-color: color-mix(in srgb, var(--blue) 40%, var(--line-2)); }
+.scenario-icon-btn.danger:hover{ color:var(--red); border-color: color-mix(in srgb, var(--red) 40%, var(--line-2)); }
+.scenario-icon-btn svg{ width:12px; height:12px; }
 
 .search-row{ display:flex; gap:8px; }
 .search-row input{
@@ -669,13 +714,16 @@ input[type="range"]::-moz-range-thumb{
       <div class="status-pill"><span class="status-dot" id="status-dot"></span><span id="status-text">Connecting to irradiance feed…</span></div>
       <div class="clock mono" id="realtime-clock">--:--:--</div>
       <span class="topbar-divider"></span>
-      <button class="icon-btn" id="share-btn" title="Copy a shareable link to this site (S)">
+      <button class="icon-btn" id="share-btn" title="Copy a shareable link to this site (S)" aria-label="Copy a shareable link to this site">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg>
       </button>
-      <button class="icon-btn" id="export-btn" title="Download a report of this scenario (E)">
+      <button class="icon-btn" id="export-btn" title="Download a report of this scenario (E)" aria-label="Download a report of this scenario">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13"/><path d="M7 11l5 5 5-5"/><path d="M4 20h16"/></svg>
       </button>
-      <button class="icon-btn" id="help-btn" title="How this works">
+      <button class="icon-btn" id="reset-btn" title="Reset scenario controls to defaults" aria-label="Reset scenario controls to defaults">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4v5h5"/><path d="M3.5 9a9 9 0 1 1 2.2 8.8"/></svg>
+      </button>
+      <button class="icon-btn" id="help-btn" title="How this works" aria-label="How this works">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M9.2 9.2a2.8 2.8 0 1 1 3.9 2.6c-.9.5-1.3 1-1.3 2v.3"/><circle cx="12" cy="17" r="0.4" fill="currentColor"/></svg>
       </button>
     </div>
@@ -720,6 +768,32 @@ input[type="range"]::-moz-range-thumb{
     <aside id="panel">
       <div class="panel-scroll">
 
+        <!-- SAVED SCENARIOS -->
+        <div class="section accent-amber">
+          <div class="section-head">
+            <div class="section-head-left">
+              <div class="section-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+              </div>
+              <div>
+                <div class="section-eyebrow">Saved locally</div>
+                <div class="section-title">Scenarios</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="scenario-save-row">
+            <input type="text" id="scenario-name-input" maxlength="60" placeholder="e.g. Rooftop A — 3kW, pre-upgrade" />
+            <button class="btn" id="scenario-save-btn" title="Save the current site + controls">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Save
+            </button>
+          </div>
+          <div class="mini-note">Snapshots the site, roof area, bill, CIBIL, penetration, and time of day — stored only in this browser, so you can flip between sites (or a before/after feeder upgrade) without losing either.</div>
+
+          <div class="scenario-list" id="scenario-list"></div>
+        </div>
+
         <!-- LOCATION -->
         <div class="section accent-blue">
           <div class="section-head">
@@ -739,10 +813,10 @@ input[type="range"]::-moz-range-thumb{
             <label for="address-input">Search an address, place, or landmark</label>
             <div class="search-row">
               <input type="text" id="address-input" placeholder="e.g. Lulu Mall, Edappally, Kochi" />
-              <button class="btn" id="geocode-btn" title="Locate and rebuild the real neighborhood">
+              <button class="btn" id="geocode-btn" title="Locate and rebuild the real neighborhood" aria-label="Locate and rebuild the real neighborhood">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               </button>
-              <button class="btn ghost" id="use-location-btn" title="Use my current location">
+              <button class="btn ghost" id="use-location-btn" title="Use my current location" aria-label="Use my current location">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
               </button>
             </div>
@@ -1027,6 +1101,10 @@ input[type="range"]::-moz-range-thumb{
       <div class="modal-step">
         <span class="modal-step-dot accent-purple-dot"></span>
         <div><b>Engine 2 · DISCOM Solver</b><span>Scrub solar penetration and time of day to watch the transformer, voltage, and reverse flow respond live.</span></div>
+      </div>
+      <div class="modal-step">
+        <span class="modal-step-dot" style="background:var(--amber);"></span>
+        <div><b>Save a scenario</b><span>Snapshot the site and every control at the top of the panel, so you can flip between two rooftops — or a before/after — without losing either.</span></div>
       </div>
     </div>
     <div class="modal-actions">
@@ -3138,6 +3216,7 @@ function toggleDayPlayback(dialApi) {
 
 /* ---- Core recompute: physics → DOM + 3D scene ---- */
 let scene3d = null;
+let dialApi = null; // set once in initUI(); reused by resetScenarioControls() and applyScenario()
 
 function recompute() {
   const grid = computeGrid({ t: state.hour, penetrationPct: state.penetrationPct, ghi: state.ghi });
@@ -3557,6 +3636,164 @@ async function copyShareLink() {
   }
 }
 
+/** Reset the scenario-control knobs (not the chosen site) to their
+ *  original defaults, and rebuild every downstream readout. */
+function resetScenarioControls() {
+  stopDayPlayback();
+  scene3d?.clearHouseSelection();
+
+  state.roofAreaM2 = 62;
+  state.penetrationPct = 45;
+  state.hour = 12.0;
+  state.billMonths = [2400, 2600, 2200, 2900, 3100, 2700];
+  state.cibilScore = 750;
+
+  $("roof-area-slider").value = state.roofAreaM2;
+  $("roof-area-value").textContent = `${state.roofAreaM2} m²`;
+  $("penetration-slider").value = state.penetrationPct;
+  $("penetration-value").textContent = `${state.penetrationPct}%`;
+  ["bill-m1", "bill-m2", "bill-m3", "bill-m4", "bill-m5", "bill-m6"].forEach((id, i) => {
+    $(id).value = state.billMonths[i];
+  });
+  $("cibil-slider").value = state.cibilScore;
+  $("cibil-value").textContent = state.cibilScore;
+
+  updatePenetrationFill();
+  updateTimeReadouts();
+  dialApi?.render(state.hour);
+  recompute();
+  recomputeCitizen();
+  recomputeFeasibility();
+
+  toast({ title: "Controls reset", message: "Roof area, bill, CIBIL, penetration, and time of day are back to their defaults. The chosen site is unchanged.", accent: "amber" });
+}
+
+/* ------------------------------------------------------------
+   5b. SAVED SCENARIOS (localStorage) — lets someone flip between
+   two sites, or a before/after on the same site, without losing
+   either configuration.
+   ------------------------------------------------------------ */
+const SCENARIO_STORAGE_KEY = "discom-twin-scenarios-v1";
+
+function loadScenarios() {
+  try {
+    const raw = localStorage.getItem(SCENARIO_STORAGE_KEY);
+    const list = raw ? JSON.parse(raw) : [];
+    return Array.isArray(list) ? list : [];
+  } catch (err) {
+    console.warn("[scenarios] failed to read from storage:", err.message);
+    return [];
+  }
+}
+
+function persistScenarios(list) {
+  try {
+    localStorage.setItem(SCENARIO_STORAGE_KEY, JSON.stringify(list));
+    return true;
+  } catch (err) {
+    console.warn("[scenarios] failed to write to storage:", err.message);
+    toast({ title: "Couldn't save scenario", message: "Browser storage is unavailable or full — try clearing some space and saving again.", accent: "red" });
+    return false;
+  }
+}
+
+function renderScenarioList() {
+  const container = $("scenario-list");
+  const list = loadScenarios();
+  if (!list.length) {
+    container.innerHTML = `<div class="scenario-empty">No saved scenarios yet — set up a site and controls below, then save it here to compare later.</div>`;
+    return;
+  }
+  container.innerHTML = "";
+  list.slice().sort((a, b) => b.savedAt - a.savedAt).forEach((sc) => {
+    const row = document.createElement("div");
+    row.className = "scenario-row";
+    const savedDate = new Date(sc.savedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" });
+    row.innerHTML = `
+      <div class="scenario-row-info">
+        <span class="scenario-row-name"></span>
+        <span class="scenario-row-meta mono">${sc.penetrationPct}% penetration · ${hourToClock(sc.hour)} · saved ${savedDate}</span>
+      </div>
+      <div class="scenario-row-actions">
+        <button class="scenario-icon-btn" data-action="load" title="Load this scenario" aria-label="Load this scenario">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+        </button>
+        <button class="scenario-icon-btn danger" data-action="delete" title="Delete this scenario" aria-label="Delete this scenario">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+        </button>
+      </div>`;
+    row.querySelector(".scenario-row-name").textContent = sc.name; // textContent, not innerHTML — untrusted user-entered name
+    row.querySelector('[data-action="load"]').addEventListener("click", () => applyScenario(sc));
+    row.querySelector('[data-action="delete"]').addEventListener("click", () => deleteScenario(sc.id));
+    container.appendChild(row);
+  });
+}
+
+function saveCurrentScenario() {
+  const input = $("scenario-name-input");
+  const name = input.value.trim() || `Scenario — ${new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}`;
+  const list = loadScenarios();
+  list.push({
+    id: `${Date.now()}-${Math.round(Math.random() * 1e6)}`,
+    name,
+    savedAt: Date.now(),
+    lat: state.lat,
+    lon: state.lon,
+    roofAreaM2: state.roofAreaM2,
+    penetrationPct: state.penetrationPct,
+    hour: state.hour,
+    billMonths: state.billMonths.slice(),
+    cibilScore: state.cibilScore,
+  });
+  if (!persistScenarios(list)) return;
+  input.value = "";
+  renderScenarioList();
+  toast({ title: "Scenario saved", message: `"${name}" was saved to this browser. Load it any time from the Scenarios panel.`, accent: "amber" });
+}
+
+function deleteScenario(id) {
+  const list = loadScenarios().filter((sc) => sc.id !== id);
+  if (!persistScenarios(list)) return;
+  renderScenarioList();
+}
+
+/** Restore a saved scenario: rebuild the site (if needed) via the normal
+ *  locate pipeline, then re-apply the saved controls on top — this order
+ *  matters, since locateAndRebuild() auto-seeds roof area from the nearest
+ *  real building, which would otherwise clobber the saved value. */
+async function applyScenario(sc) {
+  stopDayPlayback();
+  $("lat-input").value = sc.lat.toFixed(4);
+  $("lon-input").value = sc.lon.toFixed(4);
+  await locateAndRebuild({ fromSearch: false });
+
+  scene3d?.clearHouseSelection();
+  state.roofAreaM2 = sc.roofAreaM2;
+  state.penetrationPct = sc.penetrationPct;
+  state.hour = sc.hour;
+  state.billMonths = sc.billMonths.slice();
+  state.cibilScore = sc.cibilScore;
+
+  $("roof-area-slider").value = state.roofAreaM2;
+  $("roof-area-value").textContent = `${state.roofAreaM2} m²`;
+  $("penetration-slider").value = state.penetrationPct;
+  $("penetration-value").textContent = `${state.penetrationPct}%`;
+  ["bill-m1", "bill-m2", "bill-m3", "bill-m4", "bill-m5", "bill-m6"].forEach((id, i) => {
+    $(id).value = state.billMonths[i];
+  });
+  $("cibil-slider").value = state.cibilScore;
+  $("cibil-value").textContent = state.cibilScore;
+
+  updatePenetrationFill();
+  updateTimeReadouts();
+  dialApi?.render(state.hour);
+  recompute();
+  recomputeCitizen();
+  recomputeFeasibility();
+
+  toast({ title: "Scenario loaded", message: `"${sc.name}" is now active.`, accent: "amber" });
+}
+
 /** Assemble a plain-text scenario report from current DOM readouts + state. */
 function buildReportText() {
   const grid = computeGrid({ t: state.hour, penetrationPct: state.penetrationPct, ghi: state.ghi });
@@ -3660,6 +3897,12 @@ function initKeyboardShortcuts() {
 function initExtras() {
   $("share-btn").addEventListener("click", copyShareLink);
   $("export-btn").addEventListener("click", downloadReport);
+  $("reset-btn").addEventListener("click", resetScenarioControls);
+  $("scenario-save-btn").addEventListener("click", saveCurrentScenario);
+  $("scenario-name-input").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") saveCurrentScenario();
+  });
+  renderScenarioList();
   initOnboarding();
   initMobileTabs();
   initKeyboardShortcuts();
@@ -3667,7 +3910,7 @@ function initExtras() {
 
 /* ---- Wire up all controls ---- */
 function initUI() {
-  const dialApi = buildDial();
+  dialApi = buildDial();
   updateTimeReadouts();
   updatePenetrationFill();
 
