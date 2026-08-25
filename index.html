@@ -4,13 +4,6 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>DISCOM Digital Twin — Satellite Solar Feasibility</title>
-<meta name="description" content="Interactive 3D digital twin for rooftop solar feasibility. Simulate a citizen's payback on real satellite-mapped buildings, and a DISCOM's feeder hosting capacity as solar penetration rises, all in one live model." />
-<meta name="theme-color" content="#0E9F6E" />
-<meta property="og:type" content="website" />
-<meta property="og:title" content="DISCOM Digital Twin — Satellite Solar Feasibility" />
-<meta property="og:description" content="Price a rooftop's solar payback and stress-test a feeder's hosting capacity on a real, satellite-mapped neighborhood." />
-<meta name="twitter:card" content="summary" />
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%2314151A'/%3E%3Cpath d='M13 2L4 14h6l-1 8 9-12h-6l1-8z' fill='%23fff'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -105,17 +98,6 @@ body::before{
 @media (prefers-reduced-motion: reduce){
   *{ animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
 }
-
-/* ---------- Keyboard focus (mouse users never see this; :focus-visible
-   only engages for keyboard/AT navigation, so it never adds visual noise
-   to the point-and-click flow the rest of the UI is tuned for) --------- */
-:focus{ outline:none; }
-.btn:focus-visible, .icon-btn:focus-visible, .mobile-tab:focus-visible,
-input:focus-visible, .selected-house-row .btn:focus-visible{
-  outline: 2px solid var(--blue);
-  outline-offset: 2px;
-}
-.icon-btn:focus-visible{ outline-offset: 1px; }
 
 /* ---------- App shell ---------- */
 #app{ height:100vh; display:flex; flex-direction:column; }
@@ -330,7 +312,6 @@ input:focus-visible, .selected-house-row .btn:focus-visible{
 .section.accent-blue{ --accent: var(--blue); }
 .section.accent-teal{ --accent: var(--teal); }
 .section.accent-purple{ --accent: var(--purple); }
-.section.accent-amber{ --accent: var(--amber); }
 
 .section-head{ display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:16px; gap:10px; }
 .section-head-left{ display:flex; align-items:flex-start; gap:11px; }
@@ -367,6 +348,18 @@ input:focus-visible, .selected-house-row .btn:focus-visible{
 }
 .field input:hover{ background: var(--panel); }
 .field input:focus{ border-color: color-mix(in srgb, var(--accent, var(--ink)) 65%, black); background:var(--surface); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, var(--ink)) 16%, transparent); }
+
+.field-select{
+  font-family:'IBM Plex Mono',monospace; font-size:12.5px; font-weight:600;
+  border:1px solid var(--line-2); border-radius: var(--radius-sm);
+  padding: 9px 11px; background:var(--panel-2); color:var(--ink);
+  outline:none; width:100%; margin-top:8px; cursor:pointer; appearance:none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path d='M1 1l4 4 4-4' fill='none' stroke='%23888' stroke-width='1.5'/></svg>");
+  background-repeat:no-repeat; background-position: right 11px center;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+.field-select:hover{ background-color: var(--panel); }
+.field-select:focus{ border-color: color-mix(in srgb, var(--accent, var(--ink)) 65%, black); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, var(--ink)) 16%, transparent); }
 
 .btn{
   font-family:'Inter'; font-size:12px; font-weight:700;
@@ -441,37 +434,35 @@ input:focus-visible, .selected-house-row .btn:focus-visible{
 .verdict-reasons li{ margin-bottom:4px; }
 .verdict-reasons li:last-child{ margin-bottom:0; }
 
+.discom-step{
+  display:flex; gap:10px; align-items:flex-start;
+  padding:10px 0;
+  border-top: 1px solid var(--line);
+}
+.discom-step:first-child{ border-top:none; padding-top:8px; }
+.discom-step-num{
+  flex:none; width:20px; height:20px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:10px; font-weight:700; font-family:'IBM Plex Mono',monospace;
+  background:var(--panel-2); color:var(--ink-soft); border:1px solid var(--line-2);
+  margin-top:1px;
+}
+.discom-step-block .discom-step-num{ background:var(--red-soft); color:var(--red-strong); border-color:color-mix(in srgb, var(--red) 30%, transparent); }
+.discom-step-warn .discom-step-num{ background:var(--amber-soft); color:var(--amber-strong); border-color:color-mix(in srgb, var(--amber) 30%, transparent); }
+.discom-step-pass .discom-step-num{ background:var(--green-soft); color:var(--green-strong); border-color:color-mix(in srgb, var(--green) 30%, transparent); }
+.discom-step-body{ flex:1; min-width:0; }
+.discom-step-title{
+  display:flex; align-items:center; justify-content:space-between; gap:8px;
+  font-size:12px; font-weight:650; color:var(--ink);
+}
+.discom-step-title .badge{ font-size:9px; padding:2px 7px; }
+.discom-step-detail{ font-size:11px; color:var(--ink-soft); line-height:1.5; margin-top:3px; }
+
 .readout-row{ display:flex; align-items:center; justify-content:space-between; margin-top:10px; }
 .readout-label{ font-size:11.5px; color:var(--ink-soft); font-weight:500; }
 .readout-value{ font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:600; }
 
 .hairline{ height:1px; background:var(--line-2); margin:18px 0; border:none; }
-
-/* ---------- Saved scenarios ---------- */
-.scenario-save-row{ display:flex; gap:8px; }
-.scenario-save-row input{ flex:1 1 auto; }
-.scenario-list{ display:flex; flex-direction:column; gap:8px; margin-top:14px; }
-.scenario-empty{ font-size:11.5px; color:var(--ink-faint); line-height:1.6; margin-top:14px; }
-.scenario-row{
-  display:flex; align-items:center; justify-content:space-between; gap:10px;
-  padding: 10px 12px; border-radius: var(--radius-sm);
-  border:1px solid var(--line-2); background:var(--panel-2);
-  transition: background 0.15s ease, border-color 0.15s ease;
-}
-.scenario-row:hover{ background:var(--surface); border-color: color-mix(in srgb, var(--accent, var(--ink)) 30%, var(--line-2)); }
-.scenario-row-info{ min-width:0; display:flex; flex-direction:column; gap:2px; }
-.scenario-row-name{ font-size:12px; font-weight:700; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.scenario-row-meta{ font-family:'IBM Plex Mono',monospace; font-size:9.5px; color:var(--ink-faint); letter-spacing:0.02em; }
-.scenario-row-actions{ display:flex; align-items:center; gap:6px; flex:0 0 auto; }
-.scenario-icon-btn{
-  width:26px; height:26px; border-radius:100px; flex:0 0 auto;
-  display:flex; align-items:center; justify-content:center; cursor:pointer;
-  border:1px solid var(--line-2); background: var(--surface); color: var(--ink-soft);
-  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
-}
-.scenario-icon-btn:hover{ color:var(--blue); border-color: color-mix(in srgb, var(--blue) 40%, var(--line-2)); }
-.scenario-icon-btn.danger:hover{ color:var(--red); border-color: color-mix(in srgb, var(--red) 40%, var(--line-2)); }
-.scenario-icon-btn svg{ width:12px; height:12px; }
 
 .search-row{ display:flex; gap:8px; }
 .search-row input{
@@ -494,6 +485,26 @@ input:focus-visible, .selected-house-row .btn:focus-visible{
 .site-report-label{ font-size:11.5px; font-weight:600; color:var(--ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .site-report-sub{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--ink-soft); margin-top:6px; line-height:1.55; word-break:break-word; }
 .badge.procedural{ background:var(--surface); color:var(--ink-soft); border:1px solid var(--line); }
+
+/* ---------- Satellite view ---------- */
+.sat-view{ margin-top:14px; }
+.sat-view-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.sat-view-label{ font-size:11.5px; font-weight:700; color:var(--ink); letter-spacing:0.02em; }
+.sat-view-tag{ font-size:10px; font-weight:700; color:var(--ink-soft); background:var(--panel-2); border:1px solid var(--line); border-radius:100px; padding:2px 8px; }
+.sat-view-frame{
+  position:relative; width:100%; aspect-ratio:1/1; border-radius: var(--radius-sm);
+  overflow:hidden; background:var(--panel-2); border:1px solid var(--line-2); box-shadow: var(--shadow-1);
+}
+.sat-view-frame img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; }
+.sat-view-frame canvas{ position:absolute; inset:0; width:100%; height:100%; }
+.sat-view-loading{
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-soft); background:var(--panel-2);
+}
+.sat-view-loading.hidden{ display:none; }
+.sat-view-legend{ display:flex; gap:14px; margin-top:7px; font-size:10.5px; color:var(--ink-soft); }
+.sat-view-legend span{ display:flex; align-items:center; gap:5px; }
+.sat-view-legend i{ width:9px; height:9px; border-radius:2px; display:inline-block; }
 
 /* ---------- Sliders ---------- */
 .slider-block{ margin-bottom:16px; }
@@ -583,6 +594,27 @@ input[type="range"]::-moz-range-thumb{
 .impact-item .mono{ font-size:14px; font-weight:700; color: var(--ink); }
 .impact-label{ font-size:10px; color:var(--ink-soft); }
 .mini-note b{ color:var(--ink-soft); font-weight:600; }
+
+/* ---------- Transformer bank + phase-balance (DISCOM engineer detail) ---------- */
+.dt-card{
+  background: linear-gradient(165deg, var(--surface) 0%, var(--panel-2) 100%);
+  border:1px solid var(--line-2); border-radius: var(--radius-md); padding: 12px 14px;
+  box-shadow: var(--shadow-1);
+}
+.dt-card-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+.dt-card-title{ font-size:11.5px; font-weight:700; color:var(--ink); display:flex; align-items:center; gap:6px; }
+.dt-card-title .tele-dot{ width:6px; height:6px; border-radius:50%; }
+.dt-card-kva{ font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ink-faint); }
+.dt-card-load{ font-family:'IBM Plex Mono',monospace; font-size:21px; font-weight:800; letter-spacing:-0.01em; margin-bottom:6px; }
+.dt-card-sub{ font-size:10px; color:var(--ink-soft); }
+.bar-track{ height:7px; border-radius:5px; background:var(--panel-2); border:1px solid var(--line-2); overflow:hidden; margin:6px 0; }
+.bar-fill{ height:100%; border-radius:5px; transition: width 0.4s var(--ease), background 0.4s var(--ease); }
+.phase-row{ display:flex; align-items:center; gap:9px; margin-top:8px; }
+.phase-tag{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:700; width:16px; flex:0 0 auto; }
+.phase-row .bar-track{ flex:1; margin:0; }
+.phase-kw{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; color:var(--ink-soft); width:52px; text-align:right; flex:0 0 auto; }
+.tap-readout{ display:flex; align-items:center; justify-content:space-between; }
+.tap-readout .badge{ font-size:9.5px; }
 
 /* entrance */
 @keyframes riseIn{ from{ opacity:0; transform: translateY(8px); } to{ opacity:1; transform:none; } }
@@ -714,16 +746,13 @@ input[type="range"]::-moz-range-thumb{
       <div class="status-pill"><span class="status-dot" id="status-dot"></span><span id="status-text">Connecting to irradiance feed…</span></div>
       <div class="clock mono" id="realtime-clock">--:--:--</div>
       <span class="topbar-divider"></span>
-      <button class="icon-btn" id="share-btn" title="Copy a shareable link to this site (S)" aria-label="Copy a shareable link to this site">
+      <button class="icon-btn" id="share-btn" title="Copy a shareable link to this site (S)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" y1="10.6" x2="15.4" y2="6.4"/><line x1="8.6" y1="13.4" x2="15.4" y2="17.6"/></svg>
       </button>
-      <button class="icon-btn" id="export-btn" title="Download a report of this scenario (E)" aria-label="Download a report of this scenario">
+      <button class="icon-btn" id="export-btn" title="Download a report of this scenario (E)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v13"/><path d="M7 11l5 5 5-5"/><path d="M4 20h16"/></svg>
       </button>
-      <button class="icon-btn" id="reset-btn" title="Reset scenario controls to defaults" aria-label="Reset scenario controls to defaults">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4v5h5"/><path d="M3.5 9a9 9 0 1 1 2.2 8.8"/></svg>
-      </button>
-      <button class="icon-btn" id="help-btn" title="How this works" aria-label="How this works">
+      <button class="icon-btn" id="help-btn" title="How this works">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M9.2 9.2a2.8 2.8 0 1 1 3.9 2.6c-.9.5-1.3 1-1.3 2v.3"/><circle cx="12" cy="17" r="0.4" fill="currentColor"/></svg>
       </button>
     </div>
@@ -768,32 +797,6 @@ input[type="range"]::-moz-range-thumb{
     <aside id="panel">
       <div class="panel-scroll">
 
-        <!-- SAVED SCENARIOS -->
-        <div class="section accent-amber">
-          <div class="section-head">
-            <div class="section-head-left">
-              <div class="section-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-              </div>
-              <div>
-                <div class="section-eyebrow">Saved locally</div>
-                <div class="section-title">Scenarios</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="scenario-save-row">
-            <input type="text" id="scenario-name-input" maxlength="60" placeholder="e.g. Rooftop A — 3kW, pre-upgrade" />
-            <button class="btn" id="scenario-save-btn" title="Save the current site + controls">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              Save
-            </button>
-          </div>
-          <div class="mini-note">Snapshots the site, roof area, bill, CIBIL, penetration, and time of day — stored only in this browser, so you can flip between sites (or a before/after feeder upgrade) without losing either.</div>
-
-          <div class="scenario-list" id="scenario-list"></div>
-        </div>
-
         <!-- LOCATION -->
         <div class="section accent-blue">
           <div class="section-head">
@@ -813,10 +816,10 @@ input[type="range"]::-moz-range-thumb{
             <label for="address-input">Search an address, place, or landmark</label>
             <div class="search-row">
               <input type="text" id="address-input" placeholder="e.g. Lulu Mall, Edappally, Kochi" />
-              <button class="btn" id="geocode-btn" title="Locate and rebuild the real neighborhood" aria-label="Locate and rebuild the real neighborhood">
+              <button class="btn" id="geocode-btn" title="Locate and rebuild the real neighborhood">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               </button>
-              <button class="btn ghost" id="use-location-btn" title="Use my current location" aria-label="Use my current location">
+              <button class="btn ghost" id="use-location-btn" title="Use my current location">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
               </button>
             </div>
@@ -850,6 +853,23 @@ input[type="range"]::-moz-range-thumb{
               <span class="badge" id="site-report-badge">—</span>
             </div>
             <div class="site-report-sub" id="site-report-sub">—</div>
+          </div>
+
+          <div class="sat-view" id="sat-view" style="display:none;">
+            <div class="sat-view-head">
+              <span class="sat-view-label">Satellite view</span>
+              <span class="sat-view-tag mono" id="sat-view-tag">—</span>
+            </div>
+            <div class="sat-view-frame">
+              <img id="sat-view-img" alt="Satellite imagery of the selected site" />
+              <canvas id="sat-view-canvas"></canvas>
+              <div class="sat-view-loading" id="sat-view-loading">Loading imagery…</div>
+            </div>
+            <div class="sat-view-legend">
+              <span><i style="background:#22C55E"></i> Detected roof</span>
+              <span><i style="background:#94A3B8"></i> Other structure</span>
+            </div>
+            <div class="mini-note" id="sat-view-note">Esri World Imagery, ~200 m window. Roof outlines are OpenStreetMap building polygons overlaid for visual verification — not a computer-vision segmentation of the image itself.</div>
           </div>
 
           <hr class="hairline" />
@@ -1060,7 +1080,7 @@ input[type="range"]::-moz-range-thumb{
               <div class="tele-value mono" id="tele-reverse">— <span class="tele-unit">kW</span></div>
             </div>
             <div class="tele-card">
-              <div class="tele-label">Line voltage rise</div>
+              <div class="tele-label">Voltage rise, worst bus</div>
               <div class="tele-value mono" id="tele-voltage">— <span class="tele-unit">V</span></div>
             </div>
             <div class="tele-card">
@@ -1068,7 +1088,94 @@ input[type="range"]::-moz-range-thumb{
               <div class="tele-value mono" id="tele-adopters">— <span class="tele-unit">/ 9</span></div>
             </div>
           </div>
-          <div class="mini-note" id="physics-note">Solved via a linearized single-bus Newton–Raphson voltage iteration on a 63 kVA / 230 V feeder. Demonstration coupling constants, not a certified load-flow study.</div>
+          <div class="mini-note" id="physics-note">Solved via a linearized multi-bus forward–backward sweep over each house's real feeder tap, off two distribution transformers auto-sized for this block. Demonstration coupling constants, not a certified load-flow study.</div>
+        </div>
+
+        <!-- TRANSFORMER BANK & PHASE DETAIL -->
+        <div class="section accent-purple">
+          <div class="section-head">
+            <div class="section-head-left">
+              <div class="section-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg>
+              </div>
+              <div>
+                <div class="section-eyebrow">Engine 2 · DISCOM Solver</div>
+                <div class="section-title">Transformer Bank &amp; Phase Loading</div>
+              </div>
+            </div>
+            <span class="section-tag mono" id="dt-count-tag">2 DT</span>
+          </div>
+
+          <div class="field-row" id="dt-card-row" style="gap:10px;">
+            <div class="dt-card" id="dt-card-1">
+              <div class="dt-card-head">
+                <span class="dt-card-title"><span class="tele-dot" id="dt1-dot"></span>Transformer #1</span>
+                <span class="dt-card-kva" id="dt1-kva">— kVA</span>
+              </div>
+              <div class="dt-card-load mono" id="dt1-load">—%</div>
+              <div class="bar-track"><div class="bar-fill" id="dt1-bar" style="width:0%;background:var(--green);"></div></div>
+              <div class="dt-card-sub" id="dt1-sub">— houses · — kW</div>
+            </div>
+            <div class="dt-card" id="dt-card-2">
+              <div class="dt-card-head">
+                <span class="dt-card-title"><span class="tele-dot" id="dt2-dot"></span>Transformer #2</span>
+                <span class="dt-card-kva" id="dt2-kva">— kVA</span>
+              </div>
+              <div class="dt-card-load mono" id="dt2-load">—%</div>
+              <div class="bar-track"><div class="bar-fill" id="dt2-bar" style="width:0%;background:var(--green);"></div></div>
+              <div class="dt-card-sub" id="dt2-sub">— houses · — kW</div>
+            </div>
+          </div>
+
+          <div class="readout-row" style="margin-top:12px;">
+            <span class="readout-label">11 kV feeder-head loading (both DTs combined)</span>
+            <span class="readout-value mono" id="feeder-head-value">— kVA / — kVA</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill" id="feeder-head-bar" style="width:0%;background:var(--blue);"></div></div>
+
+          <hr class="hairline" />
+
+          <div class="section-eyebrow" style="margin-bottom:2px;">3-phase LT loading</div>
+          <div class="phase-row"><span class="phase-tag" style="color:var(--red);">R</span><div class="bar-track"><div class="bar-fill" id="phase-bar-R" style="width:0%;background:var(--red);"></div></div><span class="phase-kw mono" id="phase-kw-R">— kW</span></div>
+          <div class="phase-row"><span class="phase-tag" style="color:var(--amber-strong);">Y</span><div class="bar-track"><div class="bar-fill" id="phase-bar-Y" style="width:0%;background:var(--amber);"></div></div><span class="phase-kw mono" id="phase-kw-Y">— kW</span></div>
+          <div class="phase-row"><span class="phase-tag" style="color:var(--blue);">B</span><div class="bar-track"><div class="bar-fill" id="phase-bar-B" style="width:0%;background:var(--blue);"></div></div><span class="phase-kw mono" id="phase-kw-B">— kW</span></div>
+          <div class="readout-row">
+            <span class="readout-label">Phase imbalance</span>
+            <span class="readout-value mono" id="phase-imbalance-value">—%</span>
+          </div>
+
+          <hr class="hairline" />
+
+          <div class="tap-readout">
+            <label for="tap-select" class="slider-label">OLTC tap (feeder voltage regulation)</label>
+            <span class="badge" id="tap-badge">0%</span>
+          </div>
+          <select id="tap-select" class="field-select">
+            <option value="-5">−5% (buck)</option>
+            <option value="-2.5">−2.5%</option>
+            <option value="0" selected>0% (nominal)</option>
+            <option value="2.5">+2.5%</option>
+            <option value="5">+5% (boost)</option>
+          </select>
+          <div class="mini-note">Each DT's off-load tap changer holds its own bus at 230 V × (1 + tap). Bumping the tap raises every downstream voltage reading — the standard first lever a DISCOM engineer pulls before ordering a feeder upgrade.</div>
+        </div>
+
+        <!-- DISCOM APPLICATION WORKFLOW -->
+        <div class="section accent-purple">
+          <div class="section-head">
+            <div class="section-head-left">
+              <div class="section-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              </div>
+              <div>
+                <div class="section-eyebrow">Engine 2 · DISCOM Solver</div>
+                <div class="section-title">Net-Metering Application Path</div>
+              </div>
+            </div>
+            <span class="badge" id="discom-workflow-badge">—</span>
+          </div>
+          <div id="discom-workflow-steps"></div>
+          <div class="mini-note">The real state-DISCOM approval sequence (application → technical feasibility → agreement → empanelled installation → inspection & meter swap). Only the feeder-capacity and connection-type checks are actually derived from this site's numbers above — the rest are shown for process context, not evaluated.</div>
         </div>
 
       </div>
@@ -1092,7 +1199,7 @@ input[type="range"]::-moz-range-thumb{
     <div class="modal-steps">
       <div class="modal-step">
         <span class="modal-step-dot accent-blue-dot"></span>
-        <div><b>Site &amp; Irradiance</b><span>Search a real address to pull live solar irradiance and OpenStreetMap building footprints.</span></div>
+        <div><b>Site &amp; Irradiance</b><span>Search a real address to pull live solar irradiance, Esri satellite imagery, and OpenStreetMap building footprints overlaid on it.</span></div>
       </div>
       <div class="modal-step">
         <span class="modal-step-dot accent-teal-dot"></span>
@@ -1100,11 +1207,7 @@ input[type="range"]::-moz-range-thumb{
       </div>
       <div class="modal-step">
         <span class="modal-step-dot accent-purple-dot"></span>
-        <div><b>Engine 2 · DISCOM Solver</b><span>Scrub solar penetration and time of day to watch the transformer, voltage, and reverse flow respond live.</span></div>
-      </div>
-      <div class="modal-step">
-        <span class="modal-step-dot" style="background:var(--amber);"></span>
-        <div><b>Save a scenario</b><span>Snapshot the site and every control at the top of the panel, so you can flip between two rooftops — or a before/after — without losing either.</span></div>
+        <div><b>Engine 2 · DISCOM Solver</b><span>Scrub solar penetration and time of day to watch a multi-bus transformer, per-house voltage, and reverse-flow model respond live — a proof-of-concept forward–backward sweep over the real feeder taps, not a certified load-flow study.</span></div>
       </div>
     </div>
     <div class="modal-actions">
@@ -1139,10 +1242,17 @@ const GRID = {
   PANEL_KWP_PER_ADOPTER: 3,   // typical residential rooftop system size
   POWER_FACTOR: 0.9,
   NOMINAL_V: 230,             // single-phase LT feeder nominal voltage
-  FEEDER_R_OHM: 0.6,          // lumped feeder resistance, illustrative
+  TRUNK_R_PER_M: 0.012,        // Ω/m, illustrative LV trunk (pole-to-pole) conductor —
+                               // deliberately inflated above a real cable's per-km rating
+                               // (as the old lumped FEEDER_R_OHM was too), so a small demo
+                               // feeder still produces a visible voltage swing at the sliders' extremes
+  DROP_R_PER_M: 0.03,          // Ω/m, illustrative — thinner, more resistive service-drop cable
   NR_COUPLING_K: 0.02,        // scales kW injection into the voltage equation
                                // (tuned so a small 9-house demo feeder produces
                                // realistic single-digit-to-teens volt swings)
+  SINGLE_PHASE_CAP_KW: 10,     // illustrative — most Indian state DISCOM tariff
+                               // orders cap single-phase net-metering connections
+                               // around here; actual caps vary by state/DISCOM
 };
 
 const STANDARD_TRANSFORMER_KVA = [25, 63, 100, 160, 200, 250, 315, 400, 500];
@@ -1187,48 +1297,190 @@ function solarPowerPerHouse(t, ghiKwhM2Day) {
 }
 
 /**
- * Simplified single-bus feeder voltage solve via Newton–Raphson.
- * Derived from the lumped power-balance relation V(V - V0)/Z = P, i.e.
- *   f(V) = V^2 - V0*V - Z*P = 0
- * Iterating V_{n+1} = V_n - f(V_n)/f'(V_n) until the step is negligible.
- * P > 0 = net export (reverse flow) pushes voltage up; P < 0 pulls it down.
+ * Multi-bus radial LV feeder solve via forward–backward sweep — the
+ * standard technique for radial distribution networks. Unlike a meshed
+ * transmission grid (which needs iterative Newton–Raphson because power
+ * can loop back on itself), a radial feeder has exactly one path from
+ * source to every load, so the solve is direct: sweep backward from the
+ * far end to accumulate how much power flows through each trunk segment,
+ * then sweep forward from the transformer accumulating the voltage drop
+ * (rise, for net-exporting segments) across each segment in turn.
+ *
+ * This is now genuinely multi-transformer: real Indian LT blocks this
+ * size are almost never hung off a single DT — a block is split across
+ * two (or more) distribution transformers, each with its own pole-mounted
+ * can, its own LT trunk, and its own regulated bus voltage (each DT's
+ * on-load/off-load tap independently holds ~230 V at its own terminals).
+ * `topology.zones` mirrors that: one entry per DT, each with its own
+ * `poles` (ordered by distance from *that* DT) and `houses` (each
+ * referencing a local pole index + drop length, and a `globalIndex` back
+ * into the flat, scene-order house list so per-house adopter/injection
+ * state lines up with the rest of the app). Zones are solved
+ * independently — a house on DT-2 never inherits DT-1's drop — then
+ * rolled up by the caller.
  */
-function solveVoltageNR(pKW) {
-  const Z = GRID.FEEDER_R_OHM;
-  const V0 = GRID.NOMINAL_V;
-  const P = pKW * GRID.NR_COUPLING_K * 1000; // W, scaled by demo coupling constant
-  let V = V0;
-  for (let i = 0; i < 15; i++) {
-    const f = V * V - V0 * V - Z * P;
-    const fPrime = 2 * V - V0;
-    const step = f / fPrime;
-    V -= step;
-    if (Math.abs(step) < 1e-5) break;
-  }
-  return V;
+function solveFeederZones({ houseInjectionsKW, topology, V0 = GRID.NOMINAL_V }) {
+  const K = GRID.NR_COUPLING_K;
+
+  return topology.zones.map((zone) => {
+    const { poles, houses } = zone;
+
+    // Backward sweep: the power carried by the trunk segment feeding pole i
+    // equals the sum of every house's net injection at pole i or beyond —
+    // downstream of that span, within this zone only.
+    const segFlowKW = poles.map((_, segIdx) => {
+      let sum = 0;
+      houses.forEach((h) => {
+        if (h.poleIndex >= segIdx) sum += houseInjectionsKW[h.globalIndex];
+      });
+      return sum;
+    });
+
+    // Forward sweep: walk outward from this zone's own transformer, pole
+    // by pole, accumulating each segment's P·R/V0 drop (rise, when
+    // P > 0 = net export).
+    const poleV = [];
+    let prevV = V0, prevDist = 0;
+    poles.forEach((pole, i) => {
+      const segLenM = Math.max(0, pole.distFromSource - prevDist);
+      const R = segLenM * GRID.TRUNK_R_PER_M;
+      const dV = (segFlowKW[i] * 1000 * K * R) / V0;
+      const v = prevV + dV;
+      poleV.push(v);
+      prevV = v;
+      prevDist = pole.distFromSource;
+    });
+
+    // Each house's own service drop carries only its own net injection.
+    const houseV = houses.map((h) => {
+      const base = h.poleIndex >= 0 ? poleV[h.poleIndex] : V0;
+      const R = h.dropM * GRID.DROP_R_PER_M;
+      const dV = (houseInjectionsKW[h.globalIndex] * 1000 * K * R) / V0;
+      return base + dV;
+    });
+
+    return { poleV, houseV, poles, houses };
+  });
 }
+
+/** Synthetic feeder topology, used before a real neighborhood has been
+ *  fetched/built — two evenly-spaced DT zones (mirroring the procedural
+ *  9-house fallback layout), except for a very small house count where a
+ *  second DT wouldn't be realistic and everything stays on one zone. */
+function defaultTopology(n) {
+  const zones = [];
+  const splitAt = n >= 4 ? Math.ceil(n / 2) : n;
+  let gi = 0;
+  for (const zoneN of n >= 4 ? [splitAt, n - splitAt] : [n]) {
+    const poles = [], houses = [];
+    for (let i = 0; i < zoneN; i++) {
+      poles.push({ distFromSource: (i + 1) * 3.6 + 4 });
+      houses.push({ poleIndex: i, dropM: 2.5, globalIndex: gi++ });
+    }
+    zones.push({ poles, houses, kva: pickTransformerKVA(zoneN) });
+  }
+  return { zones };
+}
+
+/** Current feeder topology — replaced wholesale by locateAndRebuild()
+ *  once a real (or procedural) neighborhood is built, so the physics
+ *  solve always matches whatever's on screen. */
+let feederTopology = defaultTopology(GRID.NUM_HOUSES);
+
+/** House index → LT phase, round-robin R/Y/B — the standard way a DISCOM
+ *  spreads single-phase services across a 3-phase LT trunk so no one leg
+ *  carries the whole block's load. */
+const PHASE_NAMES = ["R", "Y", "B"];
+function phaseOfHouse(i) { return i % 3; }
 
 /**
  * DT Load % = (Σ house demand − Σ solar generation) / Transformer capacity × 100
- * Computed at a given hour, with a given fraction of homes adopting solar.
+ * Computed at a given hour, with a given fraction of homes adopting solar,
+ * independently per distribution transformer — see solveFeederZones() for
+ * why the feeder is modeled as multiple DT zones rather than one lumped
+ * transformer. `tapPct` models each DT's off-load tap changer: a ±5%
+ * adjustment to its regulated LT bus voltage, the standard DISCOM lever
+ * for holding voltage within IS 12360 limits on a stiff or weak feeder.
  */
-function computeGrid({ t, penetrationPct, ghi }) {
-  const adopters = Math.round((GRID.NUM_HOUSES * penetrationPct) / 100);
+function computeGrid({ t, penetrationPct, ghi, tapPct = 0 }) {
+  const zones = feederTopology.zones;
+  const numHouses = zones.reduce((a, z) => a + z.houses.length, 0) || GRID.NUM_HOUSES;
+  const adopters = Math.round((numHouses * penetrationPct) / 100);
 
   const demandPerHouse = GRID.HOUSE_PEAK_KW * demandFactor(t);
-  const totalDemandKW = GRID.NUM_HOUSES * demandPerHouse;
+  const totalDemandKW = numHouses * demandPerHouse;
 
   const genPerHouse = solarPowerPerHouse(t, ghi);
   const totalGenerationKW = adopters * genPerHouse;
 
   const netKW = totalDemandKW - totalGenerationKW; // + import, − export
-  const netKVA = Math.abs(netKW) / GRID.POWER_FACTOR;
-  const dtLoadPct = (netKVA / GRID.TRANSFORMER_KVA) * 100;
+  const reverseFlowKWTotal = netKW < 0 ? -netKW : 0;
 
-  const reverseFlowKW = netKW < 0 ? -netKW : 0;
-  const pInjectedKW = -netKW; // positive = exporting onto the feeder
-  const voltage = solveVoltageNR(pInjectedKW);
-  const voltageRise = voltage - GRID.NOMINAL_V;
+  // Per-house net injection (positive = exporting onto its drop), first
+  // `adopters` houses treated as adopters — matches the same convention
+  // the 3D scene's adopterFlags array uses. Indexed in global (scene)
+  // house order so it lines up with every zone's `globalIndex` refs.
+  const houseInjectionsKW = Array.from({ length: numHouses }, (_, i) =>
+    (i < adopters ? genPerHouse : 0) - demandPerHouse
+  );
+
+  const V0 = GRID.NOMINAL_V * (1 + tapPct / 100);
+  const zoneSolves = solveFeederZones({ houseInjectionsKW, topology: feederTopology, V0 });
+
+  // Per-transformer rollup — the numbers a DISCOM engineer actually acts
+  // on: is *this* DT's own thermal load and bus voltage within limits,
+  // not just the feeder average.
+  const transformers = zones.map((zone, zi) => {
+    const { poleV, houseV } = zoneSolves[zi];
+    const zoneNetKW = zone.houses.reduce((a, h) => a - houseInjectionsKW[h.globalIndex], 0);
+    const zoneNetKVA = Math.abs(zoneNetKW) / GRID.POWER_FACTOR;
+    const zoneDtLoadPct = (zoneNetKVA / zone.kva) * 100;
+    let zoneVoltage = V0;
+    for (const v of houseV) {
+      if (Math.abs(v - V0) > Math.abs(zoneVoltage - V0)) zoneVoltage = v;
+    }
+    return {
+      id: zi + 1,
+      kva: zone.kva,
+      houseCount: zone.houses.length,
+      netKW: zoneNetKW,
+      dtLoadPct: zoneDtLoadPct,
+      reverseFlowKW: zoneNetKW < 0 ? -zoneNetKW : 0,
+      voltage: zoneVoltage,
+      voltageRise: zoneVoltage - V0,
+      exporting: zoneNetKW < 0,
+      poleVoltages: poleV,
+      houseVoltages: houseV,
+    };
+  });
+
+  // Aggregate/legacy fields: the worst-loaded DT governs whatever a
+  // feasibility check or the HUD reports, since that's the transformer
+  // that will actually constrain (or trip) a new export application —
+  // an average across DTs would mask exactly the DT that matters.
+  const worst = transformers.reduce((a, b) => (b.dtLoadPct > a.dtLoadPct ? b : a));
+  const dtLoadPct = worst.dtLoadPct;
+  const voltage = worst.voltage;
+  const voltageRise = voltage - V0;
+  const houseVoltages = zoneSolves.flatMap((z) => z.houseV);
+  const poleVoltages = zoneSolves.flatMap((z) => z.poleV);
+
+  // Feeder-head (11 kV incomer) view: the two DTs' combined nameplate vs.
+  // combined net demand — what a substation-side load-management study
+  // would look at, distinct from either DT's own local thermal limit.
+  const feederHeadKva = transformers.reduce((a, t) => a + t.kva, 0);
+  const feederHeadNetKW = transformers.reduce((a, t) => a + t.netKW, 0);
+  const feederHeadLoadPct = (Math.abs(feederHeadNetKW) / GRID.POWER_FACTOR / feederHeadKva) * 100;
+
+  // Phase balance: R/Y/B loading across all houses' net injections. A
+  // healthy LT trunk keeps each leg within a few percent of the average;
+  // large imbalance overheats the neutral and skews per-phase voltage.
+  const phaseLoadKW = [0, 0, 0];
+  houseInjectionsKW.forEach((inj, i) => { phaseLoadKW[phaseOfHouse(i)] += -inj; }); // demand-positive convention
+  const phaseAvg = phaseLoadKW.reduce((a, b) => a + b, 0) / 3;
+  const phaseImbalancePct = phaseAvg !== 0
+    ? (Math.max(...phaseLoadKW.map((p) => Math.abs(p - phaseAvg))) / Math.abs(phaseAvg)) * 100
+    : 0;
 
   return {
     adopters,
@@ -1237,10 +1489,19 @@ function computeGrid({ t, penetrationPct, ghi }) {
     genPerHouse,
     netKW,
     dtLoadPct,
-    reverseFlowKW,
+    reverseFlowKW: reverseFlowKWTotal,
     voltage,
     voltageRise,
     exporting: netKW < 0,
+    houseVoltages,
+    poleVoltages,
+    transformers,
+    feederHeadKva,
+    feederHeadNetKW,
+    feederHeadLoadPct,
+    phaseLoadKW,
+    phaseImbalancePct,
+    tapPct,
   };
 }
 
@@ -1328,12 +1589,12 @@ function computeFeasibility({ capacityKW, recommendedKW, ghi, dtLoadPct, cibilSc
   if (dtLoadPct > 90) {
     reasons.push({
       level: "high",
-      text: `Local transformer is already at ${fmt(dtLoadPct, 0)}% load — DISCOM will likely require a feeder capacity study before approving more export here.`,
+      text: `The most heavily loaded local transformer is already at ${fmt(dtLoadPct, 0)}% load — DISCOM will likely require a feeder capacity study before approving more export here.`,
     });
   } else if (dtLoadPct > 75) {
     reasons.push({
       level: "medium",
-      text: `Local transformer is at ${fmt(dtLoadPct, 0)}% load — some headroom left, but worth confirming before sizing a large system.`,
+      text: `The most heavily loaded local transformer is at ${fmt(dtLoadPct, 0)}% load — some headroom left, but worth confirming before sizing a large system.`,
     });
   }
   if (recommendedKW > capacityKW * 1.15) {
@@ -1365,6 +1626,68 @@ function computeFeasibility({ capacityKW, recommendedKW, ghi, dtLoadPct, cibilSc
   else if (reasons.length) severity = "medium";
 
   return { severity, reasons };
+}
+
+/**
+ * Maps this site's already-computed numbers onto the real state-DISCOM
+ * rooftop net-metering approval sequence. Only two of the five steps are
+ * genuinely derived from this model (feeder-capacity headroom, and
+ * connection-type sizing against a typical single-phase cap) — the other
+ * three are shown for honest process context, not evaluated, since this
+ * app has no way to check vendor empanelment, site earthing, or a
+ * DISCOM's actual inspection backlog.
+ */
+function computeDiscomWorkflow({ capacityKW, dtLoadPct }) {
+  const steps = [];
+
+  steps.push({
+    title: "Application & documents",
+    status: "info",
+    detail: "Form 1 (net-metering application) plus ownership/ID proof and a roof photo is the standard document set most state DISCOM portals ask for — not modeled here beyond assuming it's in order.",
+  });
+
+  let feederStatus, feederDetail;
+  if (dtLoadPct > 90) {
+    feederStatus = "block";
+    feederDetail = `The most heavily loaded local transformer is already at ${fmt(dtLoadPct, 0)}% of rated load — DISCOM will very likely require a feeder capacity study (and possibly an upgrade) before sanctioning more export here.`;
+  } else if (dtLoadPct > 75) {
+    feederStatus = "warn";
+    feederDetail = `The most heavily loaded local transformer is at ${fmt(dtLoadPct, 0)}% of rated load — some hosting-capacity headroom left, but the DISCOM's own study may still flag it for review.`;
+  } else {
+    feederStatus = "pass";
+    feederDetail = `The most heavily loaded local transformer is at ${fmt(dtLoadPct, 0)}% of rated load — comfortable headroom for this feeder to host the modeled export.`;
+  }
+  steps.push({ title: "Technical & feeder-capacity feasibility", status: feederStatus, detail: feederDetail });
+
+  let connStatus, connDetail;
+  if (capacityKW > GRID.SINGLE_PHASE_CAP_KW) {
+    connStatus = "warn";
+    connDetail = `Sized system (${fmt(capacityKW, 1)} kWp) is above the ~${GRID.SINGLE_PHASE_CAP_KW} kWp most state DISCOMs allow on a single-phase service — expect to need a three-phase connection, which not every home already has.`;
+  } else {
+    connStatus = "pass";
+    connDetail = `Sized system (${fmt(capacityKW, 1)} kWp) fits comfortably within a standard single-phase net-metering connection.`;
+  }
+  steps.push({ title: "Agreement, sanction & connection type", status: connStatus, detail: connDetail });
+
+  steps.push({
+    title: "Empanelled-vendor installation",
+    status: "info",
+    detail: "Must be installed by a DISCOM-empanelled vendor for the net-metering agreement to be honored — a self-installed or non-empanelled system is a common real-world rejection reason this model has no way to check.",
+  });
+
+  steps.push({
+    title: "Joint inspection & bi-directional meter swap",
+    status: "info",
+    detail: "DISCOM inspects earthing/safety compliance and swaps in a bi-directional meter before export credit can begin — typically the longest real-world wait in the whole process, and entirely outside what a site model can predict.",
+  });
+
+  const overall = steps.some((s) => s.status === "block")
+    ? "block"
+    : steps.some((s) => s.status === "warn")
+    ? "warn"
+    : "pass";
+
+  return { steps, overall };
 }
 
 /* ------------------------------------------------------------
@@ -1555,6 +1878,96 @@ async function geocodeAddress(query) {
   return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon), label: data[0].display_name };
 }
 
+/* ------------------------------------------------------------
+   Satellite imagery panel — Esri World Imagery static export (no API key),
+   with OSM building footprints re-projected and drawn on top as an
+   overlay. This is what "satellite-based" means in this build: real
+   aerial/satellite basemap imagery, with vector roof polygons sourced
+   from OpenStreetMap overlaid for visual verification — not an
+   image-segmentation model run on the pixels themselves.
+   ------------------------------------------------------------ */
+const SAT_VIEW_SIZE = 640; // px, square export
+const SAT_VIEW_HALF_M = 120; // metres either side of center — matches the ~200 m Overpass query radius
+
+function metersToDegOffset(lat, dxM, dzM) {
+  const dLat = dzM / 111320;
+  const dLon = dxM / (111320 * Math.cos((lat * Math.PI) / 180));
+  return { dLat, dLon };
+}
+
+/** Fetch a satellite basemap centered on lat/lon and draw any real building
+ *  footprints on top, projected from their local metre coordinates back to
+ *  image pixels via the same bbox used for the export request. */
+function updateSatelliteView(lat, lon, buildings, isReal) {
+  const wrap = $("sat-view");
+  const img = $("sat-view-img");
+  const canvas = $("sat-view-canvas");
+  const loading = $("sat-view-loading");
+  const tag = $("sat-view-tag");
+  const note = $("sat-view-note");
+  if (!wrap || !img || !canvas) return;
+
+  wrap.style.display = "block";
+  loading.classList.remove("hidden");
+  loading.textContent = "Loading imagery…";
+
+  const { dLat, dLon } = metersToDegOffset(lat, SAT_VIEW_HALF_M, SAT_VIEW_HALF_M);
+  const minLon = lon - dLon, maxLon = lon + dLon;
+  const minLat = lat - dLat, maxLat = lat + dLat;
+  const bbox = [minLon, minLat, maxLon, maxLat].join(",");
+  const url =
+    `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export` +
+    `?bbox=${bbox}&bboxSR=4326&size=${SAT_VIEW_SIZE},${SAT_VIEW_SIZE}&imageSR=4326&format=png32&transparent=false&f=image`;
+
+  tag.textContent = isReal ? "REAL FOOTPRINTS" : "IMAGERY ONLY";
+  note.textContent = isReal
+    ? "Esri World Imagery, ~240 m window. Green outlines are real OpenStreetMap building polygons for this block, overlaid for visual verification."
+    : "Esri World Imagery, ~240 m window. No OSM footprints resolved here, so no roof outlines are overlaid — imagery shown for site context only.";
+
+  const projectToPixel = (plat, plon) => ({
+    x: ((plon - minLon) / (maxLon - minLon)) * SAT_VIEW_SIZE,
+    y: (1 - (plat - minLat) / (maxLat - minLat)) * SAT_VIEW_SIZE,
+  });
+
+  const drawOverlay = () => {
+    canvas.width = SAT_VIEW_SIZE;
+    canvas.height = SAT_VIEW_SIZE;
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, SAT_VIEW_SIZE, SAT_VIEW_SIZE);
+    if (!isReal || !buildings || !buildings.length) return;
+    buildings.forEach((b) => {
+      if (!b.points || b.points.length < 3) return;
+      // b.points are in local projector metres relative to (lon,lat) origin —
+      // reverse through the same equirectangular approximation used to build them.
+      const pts = b.points.map((p) => {
+        // p.z follows the scene convention "scene -z = geographic north"
+        // (see makeLocalProjector), so it has to be negated here — this
+        // function's own dzM param assumes +north — or the overlay comes
+        // out mirrored north/south against the real photo underneath it.
+        const { dLat: plat_off, dLon: plon_off } = metersToDegOffset(lat, p.x, -p.z);
+        return projectToPixel(lat + plat_off, lon + plon_off);
+      });
+      ctx.beginPath();
+      pts.forEach((p, i) => (i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y)));
+      ctx.closePath();
+      const color = b.isHouse ? "34,197,94" : "148,163,184";
+      ctx.fillStyle = `rgba(${color},0.28)`;
+      ctx.strokeStyle = `rgba(${color},0.95)`;
+      ctx.lineWidth = 1.6;
+      ctx.fill();
+      ctx.stroke();
+    });
+  };
+
+  img.onload = () => { loading.classList.add("hidden"); drawOverlay(); };
+  img.onerror = () => {
+    loading.classList.remove("hidden");
+    loading.textContent = "Satellite imagery unavailable — check network";
+    canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+  };
+  img.src = url;
+}
+
 /** Synthetic fallback layout, used when live building data is unavailable. */
 function generateFallbackBuildings(n = 9) {
   const buildings = [];
@@ -1601,14 +2014,23 @@ class Scene3D {
   constructor(canvas) {
     this.canvas = canvas;
     this.reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    this.currentWireColor = COLORS.green.clone();
-    this.targetDtLoadPct = 0;
+    this.currentWireColor = COLORS.green.clone(); // legacy aggregate color, kept for any external reader
+    this.targetDtLoadPct = 0; // aggregate (worst-DT) load, drives the HUD-facing color only
     this.flowSpeed = 0; // signed: + = transformer→house, − = house→transformer
     this.clock = new THREE.Clock();
 
     this.houses = [];
     this.wires = [];
     this.poles = [];
+    // One entry per distribution transformer actually built for the current
+    // neighborhood (usually 2 — see rebuildNeighborhood). Each carries its
+    // own lerped color state so DT-1 and DT-2 can independently show green
+    // while the other is amber, instead of one feeder-wide color.
+    this.transformers = [];
+    this.satGroundMesh = null;
+    this.satTextureLoader = new THREE.TextureLoader();
+    this.satTextureLoader.setCrossOrigin("anonymous");
+    this.satLoadToken = 0; // bumped on every request so a slow/late image load can't clobber a newer one
     this.feederSegments = [];
     this.lampBulbs = [];
     this.particlePool = [];
@@ -2011,6 +2433,60 @@ class Scene3D {
     this.scene.add(horizonGrid);
   }
 
+  /**
+   * Projects the same Esri World Imagery basemap used in the 2D site-report
+   * panel onto the 3D ground itself, as a textured plane sized and centered
+   * to exactly match the local-meter coordinate system every building,
+   * pole, and wire in this scene is already placed in — so the aerial photo
+   * lines up under the extruded houses instead of just sitting next to them
+   * in a separate panel. Degrades the same way the 2D panel does: on a
+   * failed/blocked fetch, it simply doesn't appear, leaving the plain
+   * grid ground already built by _buildGround() untouched underneath.
+   */
+  _updateSatelliteGround(lat, lon) {
+    const token = ++this.satLoadToken;
+    const size = SAT_VIEW_HALF_M * 2;
+    const { dLat, dLon } = metersToDegOffset(lat, SAT_VIEW_HALF_M, SAT_VIEW_HALF_M);
+    const bbox = [lon - dLon, lat - dLat, lon + dLon, lat + dLat].join(",");
+    const url =
+      `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export` +
+      `?bbox=${bbox}&bboxSR=4326&size=${SAT_VIEW_SIZE},${SAT_VIEW_SIZE}&imageSR=4326&format=png32&transparent=false&f=image`;
+
+    this.satTextureLoader.load(
+      url,
+      (tex) => {
+        if (token !== this.satLoadToken) return; // superseded by a newer rebuild
+        tex.colorSpace = THREE.SRGBColorSpace;
+        if (this.satGroundMesh) {
+          this.satGroundMesh.material.map?.dispose();
+          this.satGroundMesh.material.map = tex;
+          this.satGroundMesh.material.needsUpdate = true;
+          this.satGroundMesh.material.opacity = 1;
+        } else {
+          const geo = new THREE.PlaneGeometry(size, size);
+          const mat = new THREE.MeshBasicMaterial({ map: tex, fog: true, transparent: true, opacity: 1 });
+          const mesh = new THREE.Mesh(geo, mat);
+          mesh.rotation.x = -Math.PI / 2;
+          // Sits above the base fill plane (-0.02) but below both grid
+          // tiers (-0.001 / 0.001), so the fine grid still reads as a
+          // technical overlay drawn on top of the photo, not hidden by it.
+          mesh.position.y = -0.015;
+          this.satGroundMesh = mesh;
+          this.scene.add(mesh);
+        }
+      },
+      undefined,
+      (err) => {
+        if (token !== this.satLoadToken) return;
+        console.warn("[satellite-ground] imagery unavailable, leaving plain grid ground:", err?.message || err);
+        // Fade out (rather than yank) any previous photo still mapped from
+        // an earlier successful fetch, since this failure doesn't mean
+        // the old imagery is wrong — just that this refresh couldn't load.
+        if (this.satGroundMesh) this.satGroundMesh.material.opacity = 0.35;
+      }
+    );
+  }
+
   _edges(mesh, color = 0x18181b, opacity = 0.2) {
     const eg = new THREE.EdgesGeometry(mesh.geometry);
     const lines = new THREE.LineSegments(
@@ -2173,8 +2649,23 @@ class Scene3D {
     // partial or failed build can never leave the camera stuck on stale
     // framing from whatever was on screen before this rebuild started.
     try {
-      this._buildTransformer(bbox.minX - 4, centerZ, meta.transformerKva || 63);
-      this._buildBackbone(bbox, centerZ);
+      // Two distribution transformers for any block with enough houses to
+      // make a second one realistic — the real-world pattern (one DT per
+      // ~15-45 houses depending on diversified peak, per pickTransformerKVA)
+      // rather than a single DT sized to cover the whole block. Below that,
+      // a lone DT at the block edge is the more honest model.
+      const estHouses = buildings.filter((b) => b.isHouse).length || GRID.NUM_HOUSES;
+      const twoDT = estHouses >= 4;
+      const dt1Houses = twoDT ? Math.ceil(estHouses / 2) : estHouses;
+      const dt2Houses = estHouses - dt1Houses;
+
+      const t1 = this._buildTransformer(bbox.minX - 4, centerZ, pickTransformerKVA(dt1Houses), 1);
+      this.transformers = [t1];
+      if (twoDT) {
+        const t2 = this._buildTransformer(bbox.maxX + 4, centerZ, pickTransformerKVA(dt2Houses), 2);
+        this.transformers.push(t2);
+      }
+      this._buildBackbone(bbox, centerZ, this.transformers);
       this._buildHouses(buildings);
       this._buildWires();
       this._buildParticles();
@@ -2189,16 +2680,46 @@ class Scene3D {
     // reverts to the generic state instead of pointing at a stale index.
     if (this.onHouseSelect) this.onHouseSelect(null);
 
+    if (meta.lat != null && meta.lon != null) this._updateSatelliteGround(meta.lat, meta.lon);
+
+    // Real feeder topology, straight from the geometry just built — one
+    // zone per distribution transformer, each with its own pole list
+    // (distance measured from *that* DT) and its own houses (referencing a
+    // local pole index + drop length, plus a globalIndex back into
+    // this.houses so the physics layer's adopter/injection state lines up
+    // with the rest of the app). Handed back so the multi-DT solve always
+    // matches what's actually on screen instead of a generic stand-in.
+    const topology = {
+      zones: this.transformers.map((tr, zi) => {
+        const zonePoles = this.poles.filter((p) => p.zone === zi);
+        const zoneHouses = [];
+        this.houses.forEach((h, gi) => {
+          if (h.feederZone !== zi) return;
+          zoneHouses.push({ poleIndex: h.feederPoleIndex, dropM: h.feederDropM, globalIndex: gi });
+        });
+        return {
+          poles: zonePoles.map((p) => ({ distFromSource: p.distFromSource })),
+          houses: zoneHouses,
+          kva: tr.kva,
+        };
+      }),
+    };
+
     // Authoritative post-build house count: this.houses is only populated
     // for isHouse buildings that survived the internal centroid dedup, so
     // it can legitimately be lower than a pre-build estimate. The caller
     // uses this to keep GRID.NUM_HOUSES (and therefore adopterFlags'
     // length) in exact lockstep with this.houses.length — a mismatch there
     // means setGridState() indexes past the end of this.houses.
-    return this.houses.length;
+    return { houseCount: this.houses.length, topology, transformers: this.transformers.map((t) => ({ id: t.id, kva: t.kva })) };
   }
 
-  _buildTransformer(x, z, kva) {
+  /** Builds one distribution transformer can + pole-mount + status halo +
+   *  telemetry badge, and returns its record (pushed by the caller into
+   *  this.transformers) rather than mutating singular instance fields —
+   *  so the same method builds DT-1, DT-2, ... independently, each with
+   *  its own halo/badge/color state driven by its own load%. */
+  _buildTransformer(x, z, kva, id = 1) {
     const group = new THREE.Group();
     group.position.set(x, 0, z);
 
@@ -2221,7 +2742,7 @@ class Scene3D {
 
     // Status halo — layered soft discs behind the can for a smooth glow
     // falloff (a cheap stand-in for real bloom post-processing), recolored
-    // per DT load each frame.
+    // per this DT's own load each frame.
     const haloLayers = [];
     const haloSpecs = [
       { radius: 0.85, opacity: 0.32 },
@@ -2239,25 +2760,35 @@ class Scene3D {
       group.add(layer);
       haloLayers.push(layer);
     }
-    this.transformerHaloLayers = haloLayers;
 
     // CSS2D spatial telemetry badge — glassmorphic DOM node pinned to the
-    // transformer can's screen-space position, recolored per DT load state.
+    // transformer can's screen-space position, recolored per this DT's own
+    // load state (see setGridState).
     const badgeEl = document.createElement("div");
     badgeEl.className = "node-badge transformer-badge";
     badgeEl.innerHTML =
       `<span class="nb-dot" data-role="dt-dot"></span>` +
-      `<span class="nb-label">Transformer #1</span>` +
+      `<span class="nb-label">Transformer #${id}</span>` +
       `<span class="nb-value" data-role="dt-value">${kva} kVA</span>`;
     const badgeObj = new CSS2DObject(badgeEl);
     if (badgeObj.center) badgeObj.center.set(0.5, 1);
     badgeObj.position.set(0, 4.35, 0);
     group.add(badgeObj);
     this.badges.push(badgeObj);
-    this.transformerBadgeDot = badgeEl.querySelector('[data-role="dt-dot"]');
 
-    this.transformerTop = new THREE.Vector3(x, 3.55, z);
     this.neighborhoodGroup.add(group);
+
+    return {
+      id,
+      kva,
+      group,
+      haloLayers,
+      badgeDot: badgeEl.querySelector('[data-role="dt-dot"]'),
+      badgeValueEl: badgeEl.querySelector('[data-role="dt-value"]'),
+      top: new THREE.Vector3(x, 3.55, z),
+      currentColor: COLORS.green.clone(),
+      targetLoadPct: 0,
+    };
   }
 
   /**
@@ -2272,7 +2803,15 @@ class Scene3D {
    * problems: they give the elevated run something to visibly hang from,
    * and they turn N independent cables into one trunk + N short drops.
    */
-  _buildBackbone(bbox, centerZ) {
+  /**
+   * Strings one LT trunk per distribution transformer, each running from
+   * its own DT out toward the block's midpoint — the real pattern of two
+   * (or more) LT lines fed from opposite ends of a block with a
+   * normally-open point near the middle, rather than one DT backfeeding
+   * through another DT's own wire to reach the far half. With a single
+   * transformer this degenerates to exactly the old single-trunk layout.
+   */
+  _buildBackbone(bbox, centerZ, transformers) {
     this.poles = [];
     this.feederSegments = [];
     this.lampBulbs = [];
@@ -2283,74 +2822,94 @@ class Scene3D {
     // even a small block gets at least one intermediate support instead of
     // the trunk line going straight from the transformer to the far end.
     const targetSpacing = THREE.MathUtils.clamp(spanX / 8, 6, 9);
-    const poleCount = THREE.MathUtils.clamp(Math.round(spanX / targetSpacing), 1, 10);
-    const startX = this.transformerTop.x;
-    const endX = bbox.maxX + 2;
+    const totalPoleCount = THREE.MathUtils.clamp(Math.round(spanX / targetSpacing), 1, 10);
     const poleMat = new THREE.MeshLambertMaterial({ color: 0xd4d4d8, fog: false });
     const armMat = new THREE.MeshLambertMaterial({ color: 0xb6bac0, fog: false });
 
-    const waypoints = [this.transformerTop.clone()];
-    for (let i = 1; i <= poleCount; i++) {
-      const t = i / poleCount;
-      const x = THREE.MathUtils.lerp(startX, endX, t);
-      const poleTop = new THREE.Vector3(x, this.backboneY, centerZ);
+    const twoDT = transformers.length > 1;
+    const midX = twoDT ? (transformers[0].top.x + transformers[1].top.x) / 2 : bbox.maxX + 2;
 
-      const poleMesh = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.05, 0.075, this.backboneY, 8),
-        poleMat
-      );
-      poleMesh.position.set(x, this.backboneY / 2, centerZ);
-      this._edges(poleMesh, 0x27272a, 0.2);
-      this.neighborhoodGroup.add(poleMesh);
+    transformers.forEach((tr, zi) => {
+      const trunkEndX = twoDT ? midX : bbox.maxX + 2;
+      const poleCount = twoDT ? Math.max(1, Math.round(totalPoleCount / transformers.length)) : totalPoleCount;
+      const waypoints = [tr.top.clone()];
 
-      // A small cross-arm just under the tip so the trunk line visibly
-      // terminates on a real fixture rather than the bare top of a stick.
-      const arm = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.05, 0.05), armMat);
-      arm.position.set(x, this.backboneY - 0.15, centerZ);
-      this.neighborhoodGroup.add(arm);
+      for (let i = 1; i <= poleCount; i++) {
+        const t = i / poleCount;
+        const x = THREE.MathUtils.lerp(tr.top.x, trunkEndX, t);
+        const poleTop = new THREE.Vector3(x, this.backboneY, centerZ);
 
-      // A streetlamp bulb riding lower on the same pole — dark/glassy by
-      // day, switched to a warm emissive-looking sphere plus a soft point
-      // light at night via setTimeOfDay(). Reuses the pole that's already
-      // there instead of adding separate lamp posts.
-      const bulb = new THREE.Mesh(
-        new THREE.SphereGeometry(0.09, 8, 8),
-        new THREE.MeshBasicMaterial({ color: 0x3f3f46, fog: false })
-      );
-      bulb.position.set(x, this.backboneY - 0.55, centerZ);
-      this.neighborhoodGroup.add(bulb);
-      const lampLight = new THREE.PointLight(0xffcf87, 0, 3.2, 2);
-      lampLight.position.copy(bulb.position);
-      this.neighborhoodGroup.add(lampLight);
-      this.lampBulbs.push({ bulb, light: lampLight });
+        const poleMesh = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.05, 0.075, this.backboneY, 8),
+          poleMat
+        );
+        poleMesh.position.set(x, this.backboneY / 2, centerZ);
+        this._edges(poleMesh, 0x27272a, 0.2);
+        this.neighborhoodGroup.add(poleMesh);
 
-      this.poles.push({ top: poleTop });
-      waypoints.push(poleTop);
-    }
+        // A small cross-arm just under the tip so the trunk line visibly
+        // terminates on a real fixture rather than the bare top of a stick.
+        const arm = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.05, 0.05), armMat);
+        arm.position.set(x, this.backboneY - 0.15, centerZ);
+        this.neighborhoodGroup.add(arm);
 
-    // Trunk line: one straight tube per pole-to-pole span, rather than a
-    // curve threading all of them — real feeder spans between adjacent
-    // poles run essentially straight (tension keeps sag minimal over a
-    // 6-9 m span), and independent segments let each span recolor as its
-    // own tube without the whole line needing to be one long geometry.
-    for (let i = 0; i < waypoints.length - 1; i++) {
-      const curve = new THREE.LineCurve3(waypoints[i], waypoints[i + 1]);
-      const geo = new THREE.TubeGeometry(curve, 6, 0.035, 6, false);
-      const glowGeo = new THREE.TubeGeometry(curve, 6, 0.08, 6, false);
-      const mat = new THREE.MeshBasicMaterial({ color: this.currentWireColor, fog: false });
-      const glowMat = new THREE.MeshBasicMaterial({
-        color: this.currentWireColor, transparent: true, opacity: 0.16, depthWrite: false, fog: false,
-      });
-      const core = new THREE.Mesh(geo, mat);
-      const glow = new THREE.Mesh(glowGeo, glowMat);
-      this.neighborhoodGroup.add(core, glow);
-      this.feederSegments.push({ core, glow });
-    }
+        // A streetlamp bulb riding lower on the same pole — dark/glassy by
+        // day, switched to a warm emissive-looking sphere plus a soft point
+        // light at night via setTimeOfDay(). Reuses the pole that's already
+        // there instead of adding separate lamp posts.
+        const bulb = new THREE.Mesh(
+          new THREE.SphereGeometry(0.09, 8, 8),
+          new THREE.MeshBasicMaterial({ color: 0x3f3f46, fog: false })
+        );
+        bulb.position.set(x, this.backboneY - 0.55, centerZ);
+        this.neighborhoodGroup.add(bulb);
+        const lampLight = new THREE.PointLight(0xffcf87, 0, 3.2, 2);
+        lampLight.position.copy(bulb.position);
+        this.neighborhoodGroup.add(lampLight);
+        this.lampBulbs.push({ bulb, light: lampLight });
 
-    // ---- Street: a paved strip running under the pole line, plus sparse
-    // roadside trees — general scene detail so the block reads as a real
-    // place with context, not an abstract array of boxes on a bare grid.
-    const roadLen = endX - startX + 6;
+        // `zone` ties this pole back to the DT that feeds it; `zoneLocalIndex`
+        // is this pole's position within *that* DT's own trunk (0-based,
+        // nearest-first) — the index the physics solve actually indexes by,
+        // as opposed to its position in the combined this.poles array.
+        this.poles.push({
+          top: poleTop,
+          distFromSource: tr.top.distanceTo(poleTop),
+          zone: zi,
+          zoneLocalIndex: i - 1,
+        });
+        waypoints.push(poleTop);
+      }
+
+      // Trunk line: one straight tube per pole-to-pole span, rather than a
+      // curve threading all of them — real feeder spans between adjacent
+      // poles run essentially straight (tension keeps sag minimal over a
+      // 6-9 m span), and independent segments let each span recolor as its
+      // own tube without the whole line needing to be one long geometry.
+      // Tagged with `zone` so each DT's own trunk can lerp toward its own
+      // load color independently in _animate().
+      for (let i = 0; i < waypoints.length - 1; i++) {
+        const curve = new THREE.LineCurve3(waypoints[i], waypoints[i + 1]);
+        const geo = new THREE.TubeGeometry(curve, 6, 0.035, 6, false);
+        const glowGeo = new THREE.TubeGeometry(curve, 6, 0.08, 6, false);
+        const mat = new THREE.MeshBasicMaterial({ color: tr.currentColor, fog: false });
+        const glowMat = new THREE.MeshBasicMaterial({
+          color: tr.currentColor, transparent: true, opacity: 0.16, depthWrite: false, fog: false,
+        });
+        const core = new THREE.Mesh(geo, mat);
+        const glow = new THREE.Mesh(glowGeo, glowMat);
+        this.neighborhoodGroup.add(core, glow);
+        this.feederSegments.push({ core, glow, zone: zi });
+      }
+    });
+
+    // ---- Street: a paved strip running under the full pole line (both
+    // trunks), plus sparse roadside trees — general scene detail so the
+    // block reads as a real place with context, not an abstract array of
+    // boxes on a bare grid.
+    const startX = transformers[0].top.x;
+    const endX = twoDT ? transformers[1].top.x : bbox.maxX + 2;
+    const roadLen = Math.abs(endX - startX) + 6;
     const roadW = 3.4;
     const road = new THREE.Mesh(
       new THREE.PlaneGeometry(roadLen, roadW),
@@ -2361,10 +2920,11 @@ class Scene3D {
     road.position.set((startX + endX) / 2, 0.006, centerZ);
     this.neighborhoodGroup.add(road);
 
+    const loX = Math.min(startX, endX), hiX = Math.max(startX, endX);
     const treeCount = THREE.MathUtils.clamp(Math.round(roadLen / 9), 2, 14);
     for (let i = 0; i < treeCount; i++) {
       const t = (i + 0.5) / treeCount;
-      const x = THREE.MathUtils.lerp(startX - 2, endX + 2, t) + (Math.random() - 0.5) * 2;
+      const x = THREE.MathUtils.lerp(loX - 2, hiX + 2, t) + (Math.random() - 0.5) * 2;
       const side = i % 2 === 0 ? 1 : -1;
       const z = centerZ + side * (roadW / 2 + 1.4 + Math.random() * 1.2);
       this._buildTree(x, z);
@@ -2403,14 +2963,19 @@ class Scene3D {
 
   /** Nearest backbone pole to a given point (2D, ignoring height) — each
    *  house's service drop taps whichever pole is physically closest to it,
-   *  the way a real LT service connection would. */
+   *  the way a real LT service connection would. Search spans every DT's
+   *  trunk, so a house naturally ends up on whichever DT is geographically
+   *  closer rather than a hardcoded split. */
   _nearestPole(point) {
-    if (!this.poles.length) return { top: this.transformerTop };
+    if (!this.poles.length) {
+      const fallbackTop = this.transformers[0]?.top || new THREE.Vector3(0, 3.55, 0);
+      return { top: fallbackTop, distFromSource: 0, zone: 0, zoneLocalIndex: -1 };
+    }
     let best = this.poles[0], bestD = Infinity;
-    for (const p of this.poles) {
+    this.poles.forEach((p) => {
       const d = Math.hypot(p.top.x - point.x, p.top.z - point.z);
       if (d < bestD) { bestD = d; best = p; }
-    }
+    });
     return best;
   }
 
@@ -2755,6 +3320,13 @@ class Scene3D {
     this.wires = [];
     this.houses.forEach((house, index) => {
       const pole = this._nearestPole(house.inverterPoint);
+      // Feed the real conductor geometry (which DT's trunk, this house's
+      // local pole tap on it, + its own drop length) into the physics
+      // layer, so the multi-DT solve models exactly the feeder drawn on
+      // screen.
+      house.feederZone = pole.zone;
+      house.feederPoleIndex = pole.zoneLocalIndex;
+      house.feederDropM = pole.top.distanceTo(house.inverterPoint);
       const curve = this._dropCurve(pole.top, house.inverterPoint, index);
       const geo = new THREE.TubeGeometry(curve, 24, 0.032, 6, false);
       const glowGeo = new THREE.TubeGeometry(curve, 24, 0.075, 6, false);
@@ -2853,11 +3425,14 @@ class Scene3D {
     );
   }
 
-  /** Called every physics tick (not every frame) with the latest solved state. */
-  setGridState({ dtLoadPct, exporting, adopterFlags, genPerHouseKW = 0 }) {
+  /** Called every physics tick (not every frame) with the latest solved
+   *  state. `transformers` is the per-DT breakdown from computeGrid() —
+   *  each DT's own badge/halo/trunk-color tracks its own load, while the
+   *  aggregate `dtLoadPct` (the worst of the two) still drives the parts
+   *  of the scene that read as one feeder (house glow, particle gating). */
+  setGridState({ dtLoadPct, exporting, adopterFlags, genPerHouseKW = 0, transformers = [] }) {
     this.targetDtLoadPct = dtLoadPct;
     this.exporting = exporting;
-    // magnitude of flow drives particle speed & density; direction drives sign
     const magnitude = THREE.MathUtils.clamp(dtLoadPct / 100, 0.15, 1.6);
     this.flowSpeed = (exporting ? -1 : 1) * magnitude * 0.35;
 
@@ -2876,10 +3451,26 @@ class Scene3D {
       }
     });
 
-    if (this.transformerBadgeDot) {
-      const chip = dtLoadPct < 75 ? "var(--green)" : dtLoadPct < 100 ? "var(--amber)" : "var(--red)";
-      this.transformerBadgeDot.style.background = chip;
-    }
+    // Drive each DT's own badge/halo/particle-flow target off its own
+    // load%, not the feeder-wide aggregate — the whole point of modeling
+    // multiple transformers is that DT-1 can read green while DT-2 reads
+    // amber.
+    this.transformers.forEach((tr, i) => {
+      const t = transformers[i];
+      const loadPct = t ? t.dtLoadPct : dtLoadPct;
+      const trExporting = t ? t.exporting : exporting;
+      tr.targetLoadPct = loadPct;
+      tr.exporting = trExporting;
+      const mag = THREE.MathUtils.clamp(loadPct / 100, 0.15, 1.6);
+      tr.flowSpeed = (trExporting ? -1 : 1) * mag * 0.35;
+      if (tr.badgeDot) {
+        const chip = loadPct < 75 ? "var(--green)" : loadPct < 100 ? "var(--amber)" : "var(--red)";
+        tr.badgeDot.style.background = chip;
+      }
+      if (tr.badgeValueEl && t) {
+        tr.badgeValueEl.textContent = `${tr.kva} kVA · ${Math.round(loadPct)}%`;
+      }
+    });
   }
 
   /** Recompute the orthographic frustum bounds for the current this.frustum value. */
@@ -2912,29 +3503,40 @@ class Scene3D {
       this._applyFrustum();
     }
 
-    // Smoothly interpolate wire/halo color toward the target load color (60fps ease).
-    const target = loadToColor(this.targetDtLoadPct);
-    this.currentWireColor.lerp(target, 1 - Math.pow(0.001, dt));
-    for (const w of this.wires) {
-      w.core.material.color.copy(this.currentWireColor);
-      w.glow.material.color.copy(this.currentWireColor);
-      w.outerGlow.material.color.copy(this.currentWireColor);
-    }
-    for (const seg of this.feederSegments) {
-      seg.core.material.color.copy(this.currentWireColor);
-      seg.glow.material.color.copy(this.currentWireColor);
-    }
-    for (const layer of this.transformerHaloLayers) {
-      layer.material.color.lerp(target, 0.06);
-    }
-    const pulse = this.targetDtLoadPct > 100 && !this.reduceMotion ? 0.35 * Math.sin(performance.now() / 160) : 0;
-    const pulseScale = 1 + THREE.MathUtils.clamp(pulse, -0.12, 0.12);
-    this.transformerHaloLayers.forEach((layer, i) => {
-      layer.scale.setScalar(i === 0 ? pulseScale : 1);
+    // Smoothly interpolate each DT's own halo/trunk color toward its own
+    // target load color (60fps ease) — the aggregate this.currentWireColor
+    // is kept in lockstep too, purely as a fallback for anything that
+    // can't be tied to a specific DT (e.g. a wire whose house predates a
+    // topology rebuild).
+    const aggTarget = loadToColor(this.targetDtLoadPct);
+    this.currentWireColor.lerp(aggTarget, 1 - Math.pow(0.001, dt));
+
+    this.transformers.forEach((tr) => {
+      const target = loadToColor(tr.targetLoadPct);
+      tr.currentColor.lerp(target, 1 - Math.pow(0.001, dt));
+      for (const layer of tr.haloLayers) layer.material.color.lerp(target, 0.06);
+      const pulse = tr.targetLoadPct > 100 && !this.reduceMotion ? 0.35 * Math.sin(performance.now() / 160) : 0;
+      const pulseScale = 1 + THREE.MathUtils.clamp(pulse, -0.12, 0.12);
+      tr.haloLayers.forEach((layer, i) => layer.scale.setScalar(i === 0 ? pulseScale : 1));
     });
 
+    const colorForZone = (zone) => (this.transformers[zone] || this.transformers[0])?.currentColor || this.currentWireColor;
+
+    for (const w of this.wires) {
+      const c = colorForZone(w.house.feederZone);
+      w.core.material.color.copy(c);
+      w.glow.material.color.copy(c);
+      w.outerGlow.material.color.copy(c);
+    }
+    for (const seg of this.feederSegments) {
+      const c = colorForZone(seg.zone);
+      seg.core.material.color.copy(c);
+      seg.glow.material.color.copy(c);
+    }
+
     for (const h of this.houses) {
-      h.glow.color.copy(this.currentWireColor);
+      const c = colorForZone(h.feederZone);
+      h.glow.color.copy(c);
       h.glow.intensity = h.isAdopter ? 0.9 : 0;
     }
 
@@ -2946,18 +3548,19 @@ class Scene3D {
   }
 
   _updateParticles(dt) {
-    const active = this.targetDtLoadPct > 55; // only animate flow once load is meaningful
     for (const p of this.particlePool) {
       const wire = this.wires[p.wireIndex];
+      const tr = this.transformers[wire.house.feederZone] || this.transformers[0];
+      const active = tr && tr.targetLoadPct > 55; // only animate flow once that DT's load is meaningful
       const shouldShow = active && wire.house.isAdopter;
       p.mesh.visible = shouldShow;
       if (!shouldShow) continue;
-      p.t += this.flowSpeed * dt;
+      p.t += tr.flowSpeed * dt;
       if (p.t > 1) p.t -= 1;
       if (p.t < 0) p.t += 1;
       const pos = wire.curve.getPointAt(p.t);
       p.mesh.position.copy(pos);
-      p.mesh.material.color.copy(this.currentWireColor);
+      p.mesh.material.color.copy(tr.currentColor);
     }
   }
 }
@@ -2994,6 +3597,7 @@ const state = {
   billMonths: [2400, 2600, 2200, 2900, 3100, 2700],
   cibilScore: 750,
   dtLoadPct: 0, // last computed feeder load, read by the feasibility check
+  tapPct: 0, // OLTC tap position (%), applied to every DT's regulated bus voltage
   selectedHouseIndex: null, // index into scene3d.houses of the clicked house, or null
   selectedHouseArea: null,  // that house's real footprint area (m²), for the badge text
 };
@@ -3145,7 +3749,7 @@ function drawLoadProfileChart() {
   let maxLoad = 100;
   for (let i = 0; i <= steps; i++) {
     const t = (i / steps) * 24;
-    const g = computeGrid({ t, penetrationPct: state.penetrationPct, ghi: state.ghi });
+    const g = computeGrid({ t, penetrationPct: state.penetrationPct, ghi: state.ghi, tapPct: state.tapPct });
     samples.push(g);
     maxLoad = Math.max(maxLoad, g.dtLoadPct);
   }
@@ -3181,7 +3785,7 @@ function drawLoadProfileChart() {
   // "You are here" marker at the currently-selected hour.
   const curIdx = (state.hour / 24) * steps;
   const curX = x(curIdx);
-  const curG = computeGrid({ t: state.hour, penetrationPct: state.penetrationPct, ghi: state.ghi });
+  const curG = computeGrid({ t: state.hour, penetrationPct: state.penetrationPct, ghi: state.ghi, tapPct: state.tapPct });
   const curY = y(curG.dtLoadPct);
   ctx.strokeStyle = "rgba(20,21,26,0.35)";
   ctx.lineWidth = 1;
@@ -3216,10 +3820,9 @@ function toggleDayPlayback(dialApi) {
 
 /* ---- Core recompute: physics → DOM + 3D scene ---- */
 let scene3d = null;
-let dialApi = null; // set once in initUI(); reused by resetScenarioControls() and applyScenario()
 
 function recompute() {
-  const grid = computeGrid({ t: state.hour, penetrationPct: state.penetrationPct, ghi: state.ghi });
+  const grid = computeGrid({ t: state.hour, penetrationPct: state.penetrationPct, ghi: state.ghi, tapPct: state.tapPct });
 
   // HUD
   $("hud-load-value").textContent = `${fmt(grid.dtLoadPct, 0)}%`;
@@ -3238,15 +3841,62 @@ function recompute() {
   $("dot-load").style.background = chip.fg;
   drawLoadProfileChart();
 
+  // Transformer bank cards — one per DT, independently colored off its own
+  // load%, not the feeder-wide worst-case used for the HUD chip above.
+  $("dt-count-tag").textContent = `${grid.transformers.length} DT`;
+  [1, 2].forEach((n) => {
+    const t = grid.transformers[n - 1];
+    const card = $(`dt-card-${n}`);
+    if (!t) { if (card) card.style.display = "none"; return; }
+    if (card) card.style.display = "";
+    const c = chipStyle(t.dtLoadPct);
+    $(`dt${n}-kva`).textContent = `${t.kva} kVA`;
+    $(`dt${n}-load`).textContent = `${fmt(t.dtLoadPct, 0)}%`;
+    $(`dt${n}-load`).style.color = c.fg;
+    $(`dt${n}-dot`).style.background = c.fg;
+    $(`dt${n}-bar`).style.width = `${Math.min(100, t.dtLoadPct)}%`;
+    $(`dt${n}-bar`).style.background = c.fg;
+    $(`dt${n}-sub`).textContent = `${t.houseCount} houses · ${t.exporting ? "exporting " : "importing "}${fmt(Math.abs(t.netKW), 1)} kW`;
+  });
+
+  // Feeder-head (11 kV incomer) aggregate.
+  const feederChip = chipStyle(grid.feederHeadLoadPct);
+  $("feeder-head-value").textContent =
+    `${fmt(Math.abs(grid.feederHeadNetKW) / GRID.POWER_FACTOR, 0)} kVA / ${fmt(grid.feederHeadKva, 0)} kVA`;
+  $("feeder-head-bar").style.width = `${Math.min(100, grid.feederHeadLoadPct)}%`;
+  $("feeder-head-bar").style.background = feederChip.fg;
+
+  // 3-phase LT loading.
+  PHASE_NAMES.forEach((name, i) => {
+    const kw = grid.phaseLoadKW[i];
+    const maxKw = Math.max(...grid.phaseLoadKW.map(Math.abs), 0.1);
+    $(`phase-bar-${name}`).style.width = `${Math.min(100, (Math.abs(kw) / maxKw) * 100)}%`;
+    $(`phase-kw-${name}`).textContent = `${fmt(kw, 1)} kW`;
+  });
+  const imbalanceChip = grid.phaseImbalancePct < 10
+    ? { fg: "#047857" } : grid.phaseImbalancePct < 25
+    ? { fg: "#92400E" } : { fg: "#B91C1C" };
+  $("phase-imbalance-value").textContent = `${fmt(grid.phaseImbalancePct, 0)}%`;
+  $("phase-imbalance-value").style.color = imbalanceChip.fg;
+
+  // OLTC tap readout.
+  $("tap-badge").textContent = `${state.tapPct > 0 ? "+" : ""}${state.tapPct}%`;
+
   // Drive the 3D scene
   const adopterFlags = Array.from({ length: GRID.NUM_HOUSES }, (_, i) => i < grid.adopters);
   if (scene3d) {
-    scene3d.setGridState({ dtLoadPct: grid.dtLoadPct, exporting: grid.exporting, adopterFlags, genPerHouseKW: grid.genPerHouse });
+    scene3d.setGridState({
+      dtLoadPct: grid.dtLoadPct,
+      exporting: grid.exporting,
+      adopterFlags,
+      genPerHouseKW: grid.genPerHouse,
+      transformers: grid.transformers,
+    });
     scene3d.setTimeOfDay(state.hour);
   }
 
   // Feasibility depends on feeder headroom, so keep it resynced whenever
-  // the grid state changes (penetration, hour, or a rebuild).
+  // the grid state changes (penetration, hour, tap, or a rebuild).
   state.dtLoadPct = grid.dtLoadPct;
   recomputeFeasibility();
 }
@@ -3361,6 +4011,48 @@ function recomputeFeasibility() {
       li.textContent = r.text;
       list.appendChild(li);
     }
+  }
+
+  renderDiscomWorkflow(computeDiscomWorkflow({ capacityKW: citizen.capacityKW, dtLoadPct: state.dtLoadPct }));
+}
+
+const DISCOM_STEP_BADGE = {
+  block: { text: "BLOCKED", cls: "risk" },
+  warn: { text: "REVIEW", cls: "mock" },
+  pass: { text: "CLEAR", cls: "live" },
+  info: { text: "PROCESS STEP", cls: "procedural" },
+};
+
+/** Renders computeDiscomWorkflow()'s steps into the "Net-Metering
+ *  Application Path" card — a numbered list, each step tagged with
+ *  whether it's actually derived from this site's numbers (CLEAR /
+ *  REVIEW / BLOCKED) or shown as unevaluated process context. */
+function renderDiscomWorkflow({ steps, overall }) {
+  const wrap = $("discom-workflow-steps");
+  const headBadge = $("discom-workflow-badge");
+  if (!wrap) return;
+
+  wrap.innerHTML = "";
+  steps.forEach((step, i) => {
+    const tag = DISCOM_STEP_BADGE[step.status] || DISCOM_STEP_BADGE.info;
+    const row = document.createElement("div");
+    row.className = `discom-step discom-step-${step.status}`;
+    row.innerHTML =
+      `<div class="discom-step-num">${i + 1}</div>` +
+      `<div class="discom-step-body">` +
+      `<div class="discom-step-title">${step.title}<span class="badge ${tag.cls}">${tag.text}</span></div>` +
+      `<div class="discom-step-detail">${step.detail}</div>` +
+      `</div>`;
+    wrap.appendChild(row);
+  });
+
+  if (headBadge) {
+    const overallTag =
+      overall === "block" ? { text: "STALLS AT FEEDER CHECK", cls: "risk" } :
+      overall === "warn" ? { text: "LIKELY, WITH REVIEW", cls: "mock" } :
+      { text: "CLEAR PATH", cls: "live" };
+    headBadge.textContent = overallTag.text;
+    headBadge.className = `badge ${overallTag.cls}`;
   }
 }
 
@@ -3502,7 +4194,7 @@ async function locateAndRebuild({ fromSearch }) {
           (ancillaryCount > 0 ? ` + ${ancillaryCount} ancillary structure${ancillaryCount === 1 ? "" : "s"}` : "") +
           ` within 200 m · projected via Web Mercator`,
       });
-      toast({ title: "Neighborhood rebuilt", message: `Modeling ${houseCount} real house${houseCount === 1 ? "" : "s"}${placeLabel ? ` near ${placeLabel}` : ""} on a ${GRID.TRANSFORMER_KVA} kVA feeder.`, accent: "teal" });
+      toast({ title: "Neighborhood rebuilt", message: `Modeling ${houseCount} real house${houseCount === 1 ? "" : "s"}${placeLabel ? ` near ${placeLabel}` : ""} across ${houseCount >= 4 ? "2 distribution transformers" : "1 distribution transformer"}.`, accent: "teal" });
     } else {
       buildings = generateFallbackBuildings(9);
       houseCount = buildings.length;
@@ -3521,15 +4213,22 @@ async function locateAndRebuild({ fromSearch }) {
       }
     }
 
-    // Auto-size the transformer for however many real houses were fetched,
-    // and update every label that reports the feeder's house count.
+    updateSatelliteView(lat, lon, buildings, isReal);
+
+    // Auto-size the transformer bank for however many real houses were
+    // fetched, and update every label that reports the feeder's house
+    // count. GRID.TRANSFORMER_KVA is kept as a rough *combined* nameplate
+    // estimate for this pre-build text; the scene computes each DT's own
+    // real size from its own actual house split once built below.
     GRID.NUM_HOUSES = houseCount;
     GRID.TRANSFORMER_KVA = pickTransformerKVA(GRID.NUM_HOUSES);
     $("feeder-size-tag").textContent = `${GRID.NUM_HOUSES}-HOUSE FEEDER`;
-    $("physics-note").textContent = `Solved via a linearized single-bus Newton–Raphson voltage iteration on a ${GRID.TRANSFORMER_KVA} kVA / 230 V feeder, auto-sized for this block. Demonstration coupling constants, not a certified load-flow study.`;
+    $("physics-note").textContent = `Solved via a linearized multi-bus forward–backward sweep over the ${GRID.NUM_HOUSES} real feeder taps shown at right, off ${GRID.NUM_HOUSES >= 4 ? "two distribution transformers, each auto-sized" : "one distribution transformer, auto-sized"} for this block. Demonstration coupling constants, not a certified load-flow study.`;
 
     if (scene3d) {
-      const actualHouseCount = scene3d.rebuildNeighborhood(buildings, { transformerKva: GRID.TRANSFORMER_KVA, isReal });
+      const built = scene3d.rebuildNeighborhood(buildings, { transformerKva: GRID.TRANSFORMER_KVA, isReal, lat, lon });
+      const actualHouseCount = built.houseCount;
+      if (built.topology && built.topology.zones.some((z) => z.houses.length)) feederTopology = built.topology;
       // The scene's internal centroid dedup (near-duplicate OSM ways) can
       // legitimately trim a few more entries than the pre-build estimate
       // above accounted for — resync to whatever actually got built so the
@@ -3537,6 +4236,13 @@ async function locateAndRebuild({ fromSearch }) {
       if (actualHouseCount !== GRID.NUM_HOUSES) {
         GRID.NUM_HOUSES = actualHouseCount;
         $("feeder-size-tag").textContent = `${GRID.NUM_HOUSES}-HOUSE FEEDER`;
+      }
+      // Reflect each DT's own real nameplate rating (not the rough combined
+      // estimate above) in the physics-note and the aggregate GRID constant.
+      if (built.transformers && built.transformers.length) {
+        GRID.TRANSFORMER_KVA = built.transformers.reduce((a, t) => a + t.kva, 0);
+        const dtList = built.transformers.map((t) => `${t.kva} kVA`).join(" + ");
+        $("physics-note").textContent = `Solved via a linearized multi-bus forward–backward sweep over the ${GRID.NUM_HOUSES} real feeder taps shown at right, off ${built.transformers.length > 1 ? `two distribution transformers (${dtList})` : `one ${dtList} distribution transformer`} auto-sized for this block. Demonstration coupling constants, not a certified load-flow study.`;
       }
     }
 
@@ -3636,167 +4342,9 @@ async function copyShareLink() {
   }
 }
 
-/** Reset the scenario-control knobs (not the chosen site) to their
- *  original defaults, and rebuild every downstream readout. */
-function resetScenarioControls() {
-  stopDayPlayback();
-  scene3d?.clearHouseSelection();
-
-  state.roofAreaM2 = 62;
-  state.penetrationPct = 45;
-  state.hour = 12.0;
-  state.billMonths = [2400, 2600, 2200, 2900, 3100, 2700];
-  state.cibilScore = 750;
-
-  $("roof-area-slider").value = state.roofAreaM2;
-  $("roof-area-value").textContent = `${state.roofAreaM2} m²`;
-  $("penetration-slider").value = state.penetrationPct;
-  $("penetration-value").textContent = `${state.penetrationPct}%`;
-  ["bill-m1", "bill-m2", "bill-m3", "bill-m4", "bill-m5", "bill-m6"].forEach((id, i) => {
-    $(id).value = state.billMonths[i];
-  });
-  $("cibil-slider").value = state.cibilScore;
-  $("cibil-value").textContent = state.cibilScore;
-
-  updatePenetrationFill();
-  updateTimeReadouts();
-  dialApi?.render(state.hour);
-  recompute();
-  recomputeCitizen();
-  recomputeFeasibility();
-
-  toast({ title: "Controls reset", message: "Roof area, bill, CIBIL, penetration, and time of day are back to their defaults. The chosen site is unchanged.", accent: "amber" });
-}
-
-/* ------------------------------------------------------------
-   5b. SAVED SCENARIOS (localStorage) — lets someone flip between
-   two sites, or a before/after on the same site, without losing
-   either configuration.
-   ------------------------------------------------------------ */
-const SCENARIO_STORAGE_KEY = "discom-twin-scenarios-v1";
-
-function loadScenarios() {
-  try {
-    const raw = localStorage.getItem(SCENARIO_STORAGE_KEY);
-    const list = raw ? JSON.parse(raw) : [];
-    return Array.isArray(list) ? list : [];
-  } catch (err) {
-    console.warn("[scenarios] failed to read from storage:", err.message);
-    return [];
-  }
-}
-
-function persistScenarios(list) {
-  try {
-    localStorage.setItem(SCENARIO_STORAGE_KEY, JSON.stringify(list));
-    return true;
-  } catch (err) {
-    console.warn("[scenarios] failed to write to storage:", err.message);
-    toast({ title: "Couldn't save scenario", message: "Browser storage is unavailable or full — try clearing some space and saving again.", accent: "red" });
-    return false;
-  }
-}
-
-function renderScenarioList() {
-  const container = $("scenario-list");
-  const list = loadScenarios();
-  if (!list.length) {
-    container.innerHTML = `<div class="scenario-empty">No saved scenarios yet — set up a site and controls below, then save it here to compare later.</div>`;
-    return;
-  }
-  container.innerHTML = "";
-  list.slice().sort((a, b) => b.savedAt - a.savedAt).forEach((sc) => {
-    const row = document.createElement("div");
-    row.className = "scenario-row";
-    const savedDate = new Date(sc.savedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short" });
-    row.innerHTML = `
-      <div class="scenario-row-info">
-        <span class="scenario-row-name"></span>
-        <span class="scenario-row-meta mono">${sc.penetrationPct}% penetration · ${hourToClock(sc.hour)} · saved ${savedDate}</span>
-      </div>
-      <div class="scenario-row-actions">
-        <button class="scenario-icon-btn" data-action="load" title="Load this scenario" aria-label="Load this scenario">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
-        </button>
-        <button class="scenario-icon-btn danger" data-action="delete" title="Delete this scenario" aria-label="Delete this scenario">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
-        </button>
-      </div>`;
-    row.querySelector(".scenario-row-name").textContent = sc.name; // textContent, not innerHTML — untrusted user-entered name
-    row.querySelector('[data-action="load"]').addEventListener("click", () => applyScenario(sc));
-    row.querySelector('[data-action="delete"]').addEventListener("click", () => deleteScenario(sc.id));
-    container.appendChild(row);
-  });
-}
-
-function saveCurrentScenario() {
-  const input = $("scenario-name-input");
-  const name = input.value.trim() || `Scenario — ${new Date().toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}`;
-  const list = loadScenarios();
-  list.push({
-    id: `${Date.now()}-${Math.round(Math.random() * 1e6)}`,
-    name,
-    savedAt: Date.now(),
-    lat: state.lat,
-    lon: state.lon,
-    roofAreaM2: state.roofAreaM2,
-    penetrationPct: state.penetrationPct,
-    hour: state.hour,
-    billMonths: state.billMonths.slice(),
-    cibilScore: state.cibilScore,
-  });
-  if (!persistScenarios(list)) return;
-  input.value = "";
-  renderScenarioList();
-  toast({ title: "Scenario saved", message: `"${name}" was saved to this browser. Load it any time from the Scenarios panel.`, accent: "amber" });
-}
-
-function deleteScenario(id) {
-  const list = loadScenarios().filter((sc) => sc.id !== id);
-  if (!persistScenarios(list)) return;
-  renderScenarioList();
-}
-
-/** Restore a saved scenario: rebuild the site (if needed) via the normal
- *  locate pipeline, then re-apply the saved controls on top — this order
- *  matters, since locateAndRebuild() auto-seeds roof area from the nearest
- *  real building, which would otherwise clobber the saved value. */
-async function applyScenario(sc) {
-  stopDayPlayback();
-  $("lat-input").value = sc.lat.toFixed(4);
-  $("lon-input").value = sc.lon.toFixed(4);
-  await locateAndRebuild({ fromSearch: false });
-
-  scene3d?.clearHouseSelection();
-  state.roofAreaM2 = sc.roofAreaM2;
-  state.penetrationPct = sc.penetrationPct;
-  state.hour = sc.hour;
-  state.billMonths = sc.billMonths.slice();
-  state.cibilScore = sc.cibilScore;
-
-  $("roof-area-slider").value = state.roofAreaM2;
-  $("roof-area-value").textContent = `${state.roofAreaM2} m²`;
-  $("penetration-slider").value = state.penetrationPct;
-  $("penetration-value").textContent = `${state.penetrationPct}%`;
-  ["bill-m1", "bill-m2", "bill-m3", "bill-m4", "bill-m5", "bill-m6"].forEach((id, i) => {
-    $(id).value = state.billMonths[i];
-  });
-  $("cibil-slider").value = state.cibilScore;
-  $("cibil-value").textContent = state.cibilScore;
-
-  updatePenetrationFill();
-  updateTimeReadouts();
-  dialApi?.render(state.hour);
-  recompute();
-  recomputeCitizen();
-  recomputeFeasibility();
-
-  toast({ title: "Scenario loaded", message: `"${sc.name}" is now active.`, accent: "amber" });
-}
-
 /** Assemble a plain-text scenario report from current DOM readouts + state. */
 function buildReportText() {
-  const grid = computeGrid({ t: state.hour, penetrationPct: state.penetrationPct, ghi: state.ghi });
+  const grid = computeGrid({ t: state.hour, penetrationPct: state.penetrationPct, ghi: state.ghi, tapPct: state.tapPct });
   const citizen = computeCitizenYield({ roofAreaM2: state.roofAreaM2, ghi: state.ghi });
   const bill = computeBillSizing({ billMonths: state.billMonths, ghi: state.ghi });
   const lines = [
@@ -3807,7 +4355,7 @@ function buildReportText() {
     "SITE",
     `  Coordinates:        ${fmt(state.lat, 4)}, ${fmt(state.lon, 4)}`,
     `  Irradiance (GHI):   ${fmt(state.ghi, 2)} kWh/m²/day (${state.ghiSource})`,
-    `  Feeder size:        ${GRID.NUM_HOUSES} houses, ${GRID.TRANSFORMER_KVA} kVA transformer`,
+    `  Feeder size:        ${GRID.NUM_HOUSES} houses, ${grid.transformers.length} distribution transformer${grid.transformers.length > 1 ? "s" : ""}`,
     "",
     "ENGINE 1 — ROOFTOP SOLAR YIELD",
     state.selectedHouseIndex != null
@@ -3829,9 +4377,15 @@ function buildReportText() {
     "ENGINE 2 — FEEDER HOSTING CAPACITY",
     `  Solar penetration:  ${state.penetrationPct}% (${grid.adopters}/${GRID.NUM_HOUSES} homes)`,
     `  Time of day:        ${hourToClock(state.hour)} — ${phaseLabel(state.hour)}`,
-    `  DT thermal load:    ${fmt(grid.dtLoadPct, 1)}%`,
+    `  OLTC tap:           ${state.tapPct > 0 ? "+" : ""}${state.tapPct}% (each DT's regulated bus)`,
+    `  Worst-DT thermal load: ${fmt(grid.dtLoadPct, 1)}%`,
     `  Reverse power flow: ${fmt(grid.reverseFlowKW, 2)} kW`,
     `  Line voltage:       ${fmt(grid.voltage, 1)} V (${grid.voltageRise >= 0 ? "+" : ""}${fmt(grid.voltageRise, 1)} V)`,
+    ...grid.transformers.map((t) =>
+      `  Transformer #${t.id}:       ${t.kva} kVA, ${t.houseCount} houses, ${fmt(t.dtLoadPct, 1)}% load, ${t.exporting ? "exporting" : "importing"} ${fmt(Math.abs(t.netKW), 2)} kW, bus ${fmt(t.voltage, 1)} V`
+    ),
+    `  11kV feeder head:   ${fmt(grid.feederHeadKva, 0)} kVA combined, ${fmt(grid.feederHeadLoadPct, 1)}% loaded`,
+    `  Phase loading:      R ${fmt(grid.phaseLoadKW[0], 1)} kW · Y ${fmt(grid.phaseLoadKW[1], 1)} kW · B ${fmt(grid.phaseLoadKW[2], 1)} kW (${fmt(grid.phaseImbalancePct, 0)}% imbalance)`,
     "",
     "This is an illustrative model for feasibility exploration, not a certified engineering or financial assessment.",
     `Shareable link: ${buildShareURL()}`,
@@ -3897,12 +4451,6 @@ function initKeyboardShortcuts() {
 function initExtras() {
   $("share-btn").addEventListener("click", copyShareLink);
   $("export-btn").addEventListener("click", downloadReport);
-  $("reset-btn").addEventListener("click", resetScenarioControls);
-  $("scenario-save-btn").addEventListener("click", saveCurrentScenario);
-  $("scenario-name-input").addEventListener("keydown", (e) => {
-    if (e.key === "Enter") saveCurrentScenario();
-  });
-  renderScenarioList();
   initOnboarding();
   initMobileTabs();
   initKeyboardShortcuts();
@@ -3910,7 +4458,7 @@ function initExtras() {
 
 /* ---- Wire up all controls ---- */
 function initUI() {
-  dialApi = buildDial();
+  const dialApi = buildDial();
   updateTimeReadouts();
   updatePenetrationFill();
 
@@ -3940,6 +4488,11 @@ function initUI() {
     state.roofAreaM2 = parseFloat(e.target.value);
     $("roof-area-value").textContent = `${state.roofAreaM2} m²`;
     scheduleCitizen();
+  });
+
+  $("tap-select").addEventListener("change", (e) => {
+    state.tapPct = parseFloat(e.target.value);
+    scheduleRecompute();
   });
 
   $("clear-house-btn").addEventListener("click", () => scene3d?.clearHouseSelection());
