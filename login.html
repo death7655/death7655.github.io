@@ -70,6 +70,16 @@
   </aside>
 
 </div>
+<script>
+(function(){
+  var f=document.getElementById('login-form'); if(!f) return;
+  f.addEventListener('submit',function(){
+    var v=(document.getElementById('identity').value||'').trim();
+    if(!v) return;
+    try{localStorage.setItem('mulearn-identity',v)}catch(e){}
+  },true);
+})();
+</script>
 <script src="assets/app/login.js" defer></script>
 </body>
 </html>
