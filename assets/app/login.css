@@ -1,0 +1,111 @@
+/* Login page. Loads after app.css and reuses its theme tokens (light + dark). */
+
+.lg-page{
+  min-height:100svh;display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(420px,36vw);
+  background:var(--background);color:var(--foreground);
+}
+
+/* ---------- form column ---------- */
+.lg-main{display:flex;flex-direction:column;min-width:0;padding:24px clamp(24px,5vw,72px) 20px}
+.lg-top{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.lg-logo{display:inline-flex}
+.lg-logo img{height:34px;width:auto}
+html:not(.dark) .logo-for-dark{display:none}
+html.dark .logo-for-light{display:none}
+
+.lg-icon-btn{
+  position:relative;display:inline-flex;align-items:center;justify-content:center;
+  width:40px;height:40px;border-radius:999px;color:var(--muted-foreground);cursor:pointer;
+  transition:background-color .15s,color .15s;
+}
+.lg-icon-btn:hover{background:var(--muted);color:var(--foreground)}
+.lg-icon-btn svg{width:20px;height:20px;transition:transform .25s,opacity .25s}
+.lg-icon-btn .i-moon{position:absolute}
+html.dark .lg-icon-btn .i-moon{opacity:0;transform:rotate(90deg) scale(.4)}
+html:not(.dark) .lg-icon-btn .i-sun{opacity:0;transform:rotate(-90deg) scale(.4)}
+
+.lg-form-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 0}
+.lg-form{width:100%;max-width:400px}
+
+.lg-form h1{
+  font-family:var(--font-display,"Bricolage Grotesque",system-ui,sans-serif);
+  font-weight:800;font-size:clamp(2.25rem,1.6rem + 2vw,3rem);
+  line-height:1.05;letter-spacing:-.035em;
+}
+.lg-sub{margin-top:12px;font-size:1rem;line-height:1.5;color:var(--muted-foreground)}
+
+.lg-form form{margin-top:32px;display:flex;flex-direction:column;gap:20px}
+.lg-field{display:flex;flex-direction:column;gap:8px}
+.lg-label-row{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.lg-field label{font-size:.875rem;font-weight:600}
+
+.lg-input{
+  width:100%;height:48px;padding:0 16px;border-radius:12px;
+  background:var(--card);color:var(--foreground);font:inherit;font-size:1rem;
+  border:1px solid color-mix(in srgb,var(--foreground) 20%,transparent);
+  transition:border-color .15s,box-shadow .15s;
+}
+html.dark .lg-input{background:var(--input);border-color:color-mix(in srgb,var(--foreground) 16%,transparent)}
+.lg-input::placeholder{color:var(--muted-foreground);opacity:.8}
+.lg-input:hover{border-color:color-mix(in srgb,var(--foreground) 28%,transparent)}
+.lg-input:focus-visible{outline:none;border-color:var(--brand-blue);box-shadow:0 0 0 3px rgb(9 97 245 / .35)}
+.lg-input[aria-invalid="true"]{border-color:var(--destructive)}
+.lg-input[aria-invalid="true"]:focus-visible{box-shadow:0 0 0 3px rgb(244 67 54 / .3)}
+
+.lg-pass{position:relative}
+.lg-pass .lg-input{padding-right:48px}
+.lg-eye{
+  position:absolute;top:4px;right:4px;width:40px;height:40px;border-radius:8px;
+  display:inline-flex;align-items:center;justify-content:center;color:var(--muted-foreground);cursor:pointer;
+}
+.lg-eye:hover{color:var(--foreground)}
+.lg-eye:focus-visible{outline:2px solid var(--brand-blue);outline-offset:-2px}
+.lg-eye svg{width:20px;height:20px}
+.lg-eye .i-off{display:none}
+.lg-eye[aria-pressed="true"] .i-on{display:none}
+.lg-eye[aria-pressed="true"] .i-off{display:block}
+
+.lg-err{font-size:.8125rem;line-height:1.4;color:var(--destructive)}
+.lg-err[hidden]{display:none}
+
+.lg-link{font-size:.875rem;font-weight:600;color:var(--brand-blue);text-decoration:none;border-radius:4px}
+.lg-link:hover{text-decoration:underline;text-underline-offset:3px}
+.lg-link:focus-visible{outline:2px solid var(--brand-blue);outline-offset:3px}
+
+.lg-submit{
+  margin-top:4px;height:48px;width:100%;border-radius:999px;cursor:pointer;
+  background:#0961f5;color:#fff;font:inherit;font-size:1rem;font-weight:700;
+  transition:background-color .15s,transform .15s,box-shadow .15s;
+}
+.lg-submit:hover{background:#0b52cf;box-shadow:0 8px 20px rgb(9 97 245 / .3)}
+.lg-submit:active{transform:scale(.985)}
+.lg-submit:focus-visible{outline:none;box-shadow:0 0 0 3px var(--background),0 0 0 6px #2e85fe}
+.lg-submit:disabled{opacity:.75;cursor:progress;box-shadow:none}
+
+.lg-alt{margin-top:28px;font-size:.9375rem;color:var(--muted-foreground)}
+.lg-alt .lg-link{font-size:inherit}
+.lg-foot{font-size:.75rem;color:var(--muted-foreground)}
+
+/* ---------- photo panel ---------- */
+.lg-visual{position:relative;margin:12px;border-radius:28px;overflow:hidden;background:#0961f5;min-height:200px}
+.lg-visual img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 0}
+.lg-chip{
+  position:absolute;left:16px;bottom:16px;max-width:calc(100% - 32px);
+  padding:10px 18px;border-radius:999px;background:rgb(255 255 255 / .94);color:#0a0a0a;
+  font-size:.9375rem;font-weight:700;line-height:1.3;box-shadow:0 6px 24px rgb(0 0 0 / .22);
+}
+
+/* ---------- small screens: photo panel becomes a banner ---------- */
+@media (max-width:899.98px){
+  .lg-page{grid-template-columns:minmax(0,1fr)}
+  .lg-visual{order:-1;height:168px;margin:12px 12px 0;border-radius:22px}
+  .lg-visual img{object-position:50% 38%}
+  .lg-chip{display:none}
+  .lg-main{padding-top:16px}
+  .lg-form-wrap{padding:28px 0 36px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .lg-input,.lg-submit,.lg-icon-btn,.lg-icon-btn svg{transition:none}
+}

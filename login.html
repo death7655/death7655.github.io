@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" class="dark" style="color-scheme: dark;">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Log in | µLearn</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="icon" href="favicon.ico">
+<script>(function(){var d=document.documentElement,t='dark';try{t=localStorage.getItem('mulearn-theme')||'dark'}catch(e){}d.classList.toggle('dark',t==='dark');d.style.colorScheme=t==='dark'?'dark':'light'})()</script>
+<link rel="stylesheet" href="assets/app/fonts.css">
+<link rel="stylesheet" href="assets/app/app.css">
+<link rel="stylesheet" href="assets/app/login.css">
+</head>
+<body class="bricolage_grotesque_99bd7551-module__-5lkeq__variable plus_jakarta_sans_6e4eaa74-module__Zq-XVq__variable antialiased font-sans">
+<div class="lg-page">
+
+  <main class="lg-main">
+    <header class="lg-top">
+      <a class="lg-logo" href="index.html" aria-label="µLearn home">
+        <img class="logo-for-light" src="assets/img/logo.webp" alt="µLearn" width="128" height="34">
+        <img class="logo-for-dark" src="assets/img/logo-dark.webp" alt="" aria-hidden="true" width="128" height="34">
+      </a>
+      <button id="theme-toggle" class="lg-icon-btn" type="button" aria-label="Toggle theme">
+        <svg class="i-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+        <svg class="i-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+      </button>
+    </header>
+
+    <div class="lg-form-wrap">
+      <section class="lg-form" aria-labelledby="lg-title">
+        <h1 id="lg-title">Welcome back</h1>
+        <p class="lg-sub">Log in to continue your µJourney.</p>
+
+        <form id="login-form" novalidate>
+          <div class="lg-field">
+            <label for="identity">Email or µID</label>
+            <input class="lg-input" id="identity" name="identity" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="you@example.com" aria-describedby="identity-err">
+            <p class="lg-err" id="identity-err" role="alert" hidden></p>
+          </div>
+
+          <div class="lg-field">
+            <div class="lg-label-row">
+              <label for="password">Password</label>
+              <a class="lg-link" href="https://app.mulearn.org/">Forgot password?</a>
+            </div>
+            <div class="lg-pass">
+              <input class="lg-input" id="password" name="password" type="password" autocomplete="current-password" aria-describedby="password-err">
+              <button class="lg-eye" id="toggle-pass" type="button" aria-label="Show password" aria-pressed="false">
+                <svg class="i-on" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="i-off" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/></svg>
+              </button>
+            </div>
+            <p class="lg-err" id="password-err" role="alert" hidden></p>
+          </div>
+
+          <button class="lg-submit" id="submit" type="submit">Log in</button>
+        </form>
+
+        <p class="lg-alt">New to µLearn? <a class="lg-link" href="https://app.mulearn.org/">Join the community</a></p>
+      </section>
+    </div>
+
+    <footer class="lg-foot">© 2026 µLearn Foundation. All rights reserved.</footer>
+  </main>
+
+  <aside class="lg-visual" aria-hidden="true">
+    <img src="assets/img/join.webp" alt="">
+    <p class="lg-chip">Join 60,000+ learners &amp; innovators.</p>
+  </aside>
+
+</div>
+<script src="assets/app/login.js" defer></script>
+</body>
+</html>

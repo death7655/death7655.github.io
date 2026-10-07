@@ -1,0 +1,43 @@
+/* Additions on top of app.css for the standalone dashboard page.
+   Everything here uses the app's own theme tokens so light/dark both work. */
+
+/* logo variants swap with the theme */
+html:not(.dark) .logo-for-dark{display:none}
+html.dark .logo-for-light{display:none}
+
+/* sidebar collapse: content reclaims the gutter (app.css already slides the sidebar out) */
+@media (min-width:768px){
+  body.sidebar-collapsed .app-main{padding-left:.5rem}
+}
+
+/* mobile: sidebar becomes a drawer */
+.sidebar-backdrop{position:fixed;inset:68px 0 0 0;background:rgb(0 0 0 / .55);z-index:39}
+.sidebar-backdrop[hidden]{display:none}
+@media (max-width:767.98px){
+  body.drawer-open [data-slot="sidebar"]{display:block!important}
+  body.drawer-open [data-slot="sidebar-container"]{display:flex!important;box-shadow:0 0 40px rgb(0 0 0 / .45)}
+  body.drawer-open{overflow:hidden}
+}
+
+/* account menu */
+.acct-menu{
+  position:absolute;right:0;top:calc(100% + 10px);z-index:80;min-width:15rem;
+  background:var(--popover);color:var(--popover-foreground);
+  border:1px solid var(--border);border-radius:.75rem;padding:.375rem;
+  box-shadow:0 14px 36px rgb(0 0 0 / .3);
+  transform-origin:top right;animation:acct-in .14s ease-out both;
+}
+.acct-menu[hidden]{display:none}
+.acct-head{padding:.625rem .75rem;margin-bottom:.375rem;border-bottom:1px solid var(--border)}
+.acct-name{font-size:.875rem;font-weight:700;line-height:1.2}
+.acct-sub{margin-top:.125rem;font-size:.75rem;color:var(--muted-foreground)}
+.acct-menu a,.acct-menu button{
+  display:flex;align-items:center;gap:.625rem;width:100%;
+  padding:.5rem .75rem;border-radius:.5rem;border:0;background:none;cursor:pointer;
+  font:inherit;font-size:.875rem;font-weight:500;text-align:left;color:inherit;text-decoration:none;
+}
+.acct-menu a:hover,.acct-menu button:hover,
+.acct-menu a:focus-visible,.acct-menu button:focus-visible{background:var(--accent);outline:none}
+.acct-menu .danger{color:var(--destructive)}
+@keyframes acct-in{from{opacity:0;transform:translateY(-4px) scale(.98)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.acct-menu{animation:none}}
